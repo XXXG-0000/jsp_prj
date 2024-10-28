@@ -32,7 +32,6 @@ public class DrinkDAO {
 	 * @throws SQLException
 	 */
 	public int selectTotalCountCoffee(SearchVO sVO)throws SQLException{
-	//public int selectTotalCountCoffee(CoffeeSearchVO csVO)throws SQLException{
 		int totalCount = 0;
 		
 		Connection conn = null;

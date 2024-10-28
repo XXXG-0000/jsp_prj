@@ -3,7 +3,7 @@
     info="주문 관리 페이지"
     %>
 <%--관리자 세션을 검증하는 jsp include--%>
-<jsp:include page="../common/jsp/manager_session_chk.jsp"/>
+<%-- <jsp:include page="../common/jsp/manager_session_chk.jsp"/> --%>
 
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
@@ -221,6 +221,78 @@
                 </div>
             </div>
         </div>
+        
+        <jsp:useBean id="sVO" class="project.manager.menu.SearchVO" scope="page"/>
+        <jsp:setProperty property="*" name="dsVO"/>
+        <%-- <%
+        //게시판 리스트 구현
+        //1-1. 총 커피 레코드 수 구하기
+        
+        int totalCount = 0;
+        DrinkDAO dDAO = DrinkDAO.getInstance();
+        try{
+        	totalCount = dDAO.selectTotalCountCoffee(sVO);
+        	//System.out.println(totalCount);
+        } catch(SQLException se){
+        	se.printStackTrace();
+        }
+        //2-1. 한 화면에 보여줄 커피 레코드의 수
+        int pageScale = 10;
+        
+        //3-1. 총 커피 페이지 수
+        int totalPage = (int)Math.ceil((double)totalCount/pageScale);
+        
+        //4-1 커피 검색의 시작 번호를 구하기(pagination의 번호)
+        String paramPage = request.getParameter("currentPage");
+        
+        int currentPage = 1;
+        if(paramPage != null){
+        	try{
+        		currentPage = Integer.parseInt(paramPage);
+        	} catch(NumberFormatException nfe) {
+        		nfe.printStackTrace();
+        	}// end catch
+        }//end if
+        
+        int startNum = currentPage * pageScale - pageScale + 1; // 커피 시작 번호
+        
+        // 5-1. 끝 번호 구하기
+        int endNum = startNum + pageScale - 1; // 커피 끝 번호
+        
+        sVO.setCurrentPage(currentPage);
+        sVO.setStartNum(startNum);
+        sVO.setEndNum(endNum);
+        sVO.setTotalPage(totalPage);
+        sVO.setTotalCount(totalCount);
+        
+        //out.print(sVO);
+               
+        //System.out.println(csVO.getStartNum() + ", " + csVO.getEndNum());
+        
+        List<ProductVO> listBoard = null;
+        try{
+        	listBoard = dDAO.selectCoffeeBoard(sVO);//시작 번호, 끝 번호를 사용한 게시글 조회
+        	
+/*         	String tempName="";
+        	for(ProductVO tempVO : listBoard){
+        		tempName = tempVO.getiNameK();
+        		if(tempName.length() > 30){
+        			tempVO.setiNameK(tempName.substring(0,29) + "...");
+        		}// end if
+        	}// end for */
+        } catch(SQLException se){
+        	se.printStackTrace();
+        }//end catch
+        
+   	 	pageContext.setAttribute("totalCount", totalCount);
+    	pageContext.setAttribute("pageScale", pageScale); 
+    	pageContext.setAttribute("totalPage", totalPage);
+     	pageContext.setAttribute("currentPage", currentPage);
+    	pageContext.setAttribute("startNum", startNum);
+    	pageContext.setAttribute("endNum", endNum);	 
+    	pageContext.setAttribute("listBoard", listBoard);	
+        
+        %> --%>
         
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
