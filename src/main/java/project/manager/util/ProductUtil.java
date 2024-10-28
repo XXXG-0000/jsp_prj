@@ -13,7 +13,11 @@ public class ProductUtil {
 	 */
 	public String pagination(SearchVO sVO) {
 		StringBuilder pagination = new StringBuilder();
+<<<<<<< HEAD
 				
+=======
+			
+>>>>>>> 7d5a81df9d404d9002798282fc5aa957fd4ce208
 		if(sVO.getTotalCount() != 0) {
 			//1. 한 화면에 보여줄 페이지 인덱스의 수 설정
 			int pageNumber = 3; // [1][2][3]
