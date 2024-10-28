@@ -110,7 +110,7 @@ public class BoardDAO {
 			selectBoard.append("	)where rnum between ? and ?	")
 			;
 			
-			System.out.println(selectBoard);
+			//System.out.println(selectBoard);
 			
 			pstmt = conn.prepareStatement(selectBoard.toString());
 			//바인드 변수에 값 설정

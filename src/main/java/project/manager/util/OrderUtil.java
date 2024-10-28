@@ -1,8 +1,8 @@
 package project.manager.util;
 
-import project.manager.menu.SearchVO;
+import project.manager.order.SearchVO;
 
-public class ProductUtil {
+public class OrderUtil {
 
 	/**
 	 * 페이지네이션을 사용하려면 매개변수로 입력되는 객체의
