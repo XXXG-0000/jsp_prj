@@ -4,7 +4,7 @@ package project.manager.menu;
  * 현재 페이지의 시작 번호, 끝 번호, 검색 컬럼, 검색 값, 검색 URL
  */
 public class SearchVO {
-	private int startNum, endNum, currentPage, totalPage; // 시작번호, 끝번호, 현재 페이지 번호, 총 페이지 수 
+	private int startNum, endNum, currentPage, totalPage, totalCount; // 시작번호, 끝번호, 현재 페이지 번호, 총 페이지 수 
 	private String field="0", keyword, url;// 검색할 field에 대응되는 숫자, 검색 키워드
 
 	public int getStartNum() {
@@ -63,11 +63,21 @@ public class SearchVO {
 		this.totalPage = totalPage;
 	}
 
+	public int getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(int totalCount) {
+		this.totalCount = totalCount;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchVO [startNum=" + startNum + ", endNum=" + endNum + ", currentPage=" + currentPage + ", totalPage="
-				+ totalPage + ", field=" + field + ", keyword=" + keyword + ", url=" + url + "]";
+				+ totalPage + ", totalCount=" + totalCount + ", field=" + field + ", keyword=" + keyword + ", url="
+				+ url + "]";
 	}
+
 
 
 

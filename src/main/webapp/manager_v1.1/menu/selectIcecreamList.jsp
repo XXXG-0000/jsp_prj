@@ -296,9 +296,7 @@ function loginMove(){
 		}//end if
 		//5. 첫 페이지가 인덱스 화면이 아닌 경우(3보다 큰 경우)
 		int movePage = 0;
-		//String prevMark = "<li class=\"page-item\"><a class=\"page-link\" href=\"#\"><i class=\"bi bi-chevron-double-left\" title=\"이전으로\"></i></a>";
-		StringBuilder prevMark = new StringBuilder();
-		prevMark.append("<li class=\"page-item\"><a class=\"page-link\" href=\"#\"><i class=\"bi bi-chevron-double-left\" title=\"이전으로\"></i></a>");		
+		String prevMark = "<li class=\"page-item\"><a class=\"page-link\" href=\"#\"><i class=\"bi bi-chevron-double-left\" title=\"이전으로\"></i></a>";
 		
 		if(currentPage > pageNumber){// 현재 페이지가 pagination의 수보다 크면
 			//이전으로 가기 링크를 활성화
