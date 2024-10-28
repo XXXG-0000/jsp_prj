@@ -345,7 +345,7 @@
         <tr>
         	<!-- var.VO의 변수명 -->
         	<!-- 번호, 상품 이름, 주문자, 주문 시간, 주문 수량, 주문 상태 -->
-        	<td>ON_00<c:out value="${ oVO.cartItemNum }"/></td>
+        	<td>ON_<c:out value="${ oVO.cartItemNum }"/></td>
         	<td><a href="selectDetailCoffee.jsp?cartItemNum=${ oVO.cartItemNum }&currentPage=${ currentPage }">
         	<c:out value="${ oVO.iNameK }"/></a></td>
         	<td><c:out value="${ oVO.name }"/></td>

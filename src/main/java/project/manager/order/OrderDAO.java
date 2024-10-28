@@ -120,7 +120,7 @@ public class OrderDAO {
 			StringBuilder selectNotReceivedList = new StringBuilder();
 			selectNotReceivedList
 			.append("	select cart_item_num,i_name,name,input_date,quantity,receipt_flag	")
-			.append("	from(select cart_item_num,(select i_name_k from item where item.item_num = cart_item.item_num)i_name,	")
+			.append("	from(select LPAD(cart_item_num, 3, '0')cart_item_num,(select i_name_k from item where item.item_num = cart_item.item_num)i_name,	")
 			.append("	(select cus.name from	customer cus inner join	cart c on cus.cus_id = c.cus_id	")
 			.append("	inner join cart_item ci on ci.cart_num = c.cart_num where c.cart_num = 0 and ci.cart_item_num = 0)name,	")
 			.append("	input_date,quantity,receipt_flag,row_number() over(order by input_date asc) rnum	")
@@ -140,7 +140,7 @@ public class OrderDAO {
 			
 			while(rs.next()) {
 				oVO = new OrderVO();
-				oVO.setCartItemNum(rs.getInt("cart_item_num"));
+				oVO.setCartItemNum(rs.getString("cart_item_num"));
 				oVO.setiNameK(rs.getString("i_name"));
 				oVO.setName(rs.getString("name"));
 				oVO.setInputDate(rs.getDate("input_date"));
@@ -180,7 +180,7 @@ public class OrderDAO {
 			StringBuilder selectNotReceivedList = new StringBuilder();
 			selectNotReceivedList
 			.append("	select cart_item_num,i_name,name,input_date,quantity,receipt_flag	")
-			.append("	from(select cart_item_num,(select i_name_k from item where item.item_num = cart_item.item_num)i_name,	")
+			.append("	from(select LPAD(cart_item_num, 3, '0')cart_item_num,(select i_name_k from item where item.item_num = cart_item.item_num)i_name,	")
 			.append("	(select cus.name from	customer cus inner join	cart c on cus.cus_id = c.cus_id	")
 			.append("	inner join cart_item ci on ci.cart_num = c.cart_num where c.cart_num = 0 and ci.cart_item_num = 0)name,	")
 			.append("	input_date,quantity,receipt_flag,row_number() over(order by input_date asc) rnum	")
@@ -200,7 +200,7 @@ public class OrderDAO {
 			
 			while(rs.next()) {
 				oVO = new OrderVO();
-				oVO.setCartItemNum(rs.getInt("cart_item_num"));
+				oVO.setCartItemNum(rs.getString("cart_item_num"));
 				oVO.setiNameK(rs.getString("i_name"));
 				oVO.setName(rs.getString("name"));
 				oVO.setInputDate(rs.getDate("input_date"));

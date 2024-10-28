@@ -3,14 +3,14 @@ package project.manager.order;
 import java.sql.Date;
 
 public class OrderVO {
-	private int cartItemNum, cartNum, itemNum, quantity; // 카트 아이템 번호, 카트 고유 번호, 아이템 번호, 주문 수량
-	private String orderFlag, receiptFlag, cusId, name, iNameK;  // 주문 플래그, 수령 플래그, 주문자 id, 주문자 이름, 주문 상품 이름
+	private int cartNum, itemNum, quantity; // 카트 아이템 번호, 카트 고유 번호, 아이템 번호, 주문 수량
+	private String cartItemNum, orderFlag, receiptFlag, cusId, name, iNameK;  // 주문 플래그, 수령 플래그, 주문자 id, 주문자 이름, 주문 상품 이름
 	private Date inputDate; // 주문 시간
 	
-	public int getCartItemNum() {
+	public String getCartItemNum() {
 		return cartItemNum;
 	}
-	public void setCartItemNum(int cartItemNum) {
+	public void setCartItemNum(String cartItemNum) {
 		this.cartItemNum = cartItemNum;
 	}
 	public int getCartNum() {
