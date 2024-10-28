@@ -1,5 +1,5 @@
 <%@page import="project.manager.util.ProductUtil"%>
-y<%@page import="project.manager.menu.DessertIceDAO"%>
+<%@page import="project.manager.menu.DessertIceDAO"%>
 <%@page import="project.manager.menu.ProductVO"%>
 <%@page import="java.util.List"%>
 <%@page import="java.sql.SQLException"%>
