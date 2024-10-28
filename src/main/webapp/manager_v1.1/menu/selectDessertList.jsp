@@ -1,4 +1,5 @@
-<%@page import="project.manager.menu.DessertIceDAO"%>
+<%@page import="project.manager.util.ProductUtil"%>
+y<%@page import="project.manager.menu.DessertIceDAO"%>
 <%@page import="project.manager.menu.ProductVO"%>
 <%@page import="java.util.List"%>
 <%@page import="java.sql.SQLException"%>
@@ -200,8 +201,11 @@ function loginMove(){
                 // 5-1. 끝 번호 구하기
                 int endNum = startNum + pageScale - 1; // 커피 끝 번호
                 
+                sVO.setCurrentPage(currentPage);
                 sVO.setStartNum(startNum);
                 sVO.setEndNum(endNum);
+                sVO.setTotalPage(totalPage);
+                sVO.setTotalCount(totalCount);
                        
                 //System.out.println(csVO.getStartNum() + ", " + csVO.getEndNum());
                 
@@ -283,59 +287,8 @@ function loginMove(){
 			</div>		 --%> 
 		<!-- pagination -->
 		<ul class="pagination justify-content-center">
-		<%
-		//1. 한 화면에 보여줄 페이지 인덱스의 수 설정
-		int pageNumber = 3; // [1][2][3]
-		//2. 화면에 보여줄 시작페이지 번호
-		int startPage = ((currentPage - 1) / pageNumber)*pageNumber + 1;
-		//3. 화면에 보여줄 마지막 페이지 번호
-		int endPage = startPage + pageNumber - 1;
-		//4. 총 페이지 수가 연산된 마지막 페이지 수보다 작다면 총 페이지 수가 마지막 페이지 수로 설정
-		if(totalPage <= endPage){
-			endPage = totalPage;
-		}//end if
-		//5. 첫 페이지가 인덱스 화면이 아닌 경우(3보다 큰 경우)
-		int movePage = 0;
-		String prevMark = "<li class=\"page-item\"><a class=\"page-link\" href=\"#\"><i class=\"bi bi-chevron-double-left\" title=\"이전으로\"></i></a>";
-		
-		if(currentPage > pageNumber){// 현재 페이지가 pagination의 수보다 크면
-			//이전으로 가기 링크를 활성화
-			movePage = startPage - 1;//1,4,7,...
-			prevMark = "<li class=\"page-item\"><a class=\"page-link\" href=\"selectCoffeeList.jsp?currentPage="+movePage
-					+"\"><i class=\"bi bi-chevron-double-left\" title=\"이전으로\"></i></a>";
-/* 			prevMark = "[ <a href=\"selectCoffeeList.jsp?currentPage="+movePage
-			+"\"> &lt;&lt;</a> ]"; */
-		}
-		%>	
-		<%= prevMark %>
-		<%
-		//6. 시작 페이지 번호부터 끝 페이지 번호까지 화면에 출력
-		movePage = startPage;
-		String pageLink = "";
-		while(movePage <= endPage){
-			pageLink="<li class=\"page-item\"><a class=\"page-link\" href=\"selectCoffeeList.jsp?currentPage="+ movePage +"\">"+ movePage +"</a>";
-			//pageLink="[ <a href='selectCoffeelist.jsp?currentPage="+ movePage +"'>"+ movePage + "</a> ]";
-			
-			if(movePage == currentPage){ // 현재 페이지는 링크 설정 X
-				pageLink = "<li class=\"page-item\"><a class=\"page-link active\" href='#'>"+ movePage +"</a>";
-				//pageLink = "[ "+movePage+" ]";
-			}// end if
-			out.print(pageLink);
-			movePage++;
-		}// end while
-			
-		//7. 뒤에 페이지가 더 있는 경우
-		String nextMark = "<li class=\"page-item\"><a class=\"page-link\" href='#'><i class=\"bi bi-chevron-double-right\" title=\"다음으로\"></i></a>";
-
-		if(totalPage > endPage){
-			movePage = endPage + 1;
-			nextMark = "<li class=\"page-item\"><a class=\"page-link\" href=\"selectCoffeeList.jsp?currentPage="+movePage
-					+"\"><i class=\"bi bi-chevron-double-right\" title=\"다음으로\"></i></a>"; 
-			/* nextMark = "[<a href='board_list.jsp?currentPage=" + movePage 
-					+ "'> &gt;&gt; </a>]"; */
-		}// end if
-		%>
-		<%= nextMark %>
+		<% sVO.setUrl("selectCoffeeList.jsp"); %>
+		<%= new ProductUtil().pagination(sVO) %>
 		</ul>
 		<!-- pagination end -->
         </form>
@@ -347,6 +300,7 @@ function loginMove(){
         		<a href="${ loginFlag }" style="color:#FFF; font-weight: bold;">
         		<svg class="bi"><use xlink:href="#plus-circle"/></svg> 음료 추가</a>
         	</button>
+        	<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
         </main>
     </div>
 </div>

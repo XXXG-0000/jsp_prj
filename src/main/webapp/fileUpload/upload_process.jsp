@@ -1,6 +1,7 @@
+<%@page import="java.io.File"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
-    info=""
+    info="multipart/form-data인 경우 web parameter가 전달되지 않는다."
     %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -34,6 +35,14 @@ $(function(){
 <div id="wrap">
 <!-- HTML 영역 => HTML 태그 작성, CSS 정의한 디자인 적용, JS에서 동적인 디자인 생성 보여주는 일, JS에서 HTML Form Control에 입력된 값을 
 	유효성 검증 수행 => onxxx속성 사용 -->
+<%-- 
+web parameter가 전달되지 않는다.
+업로더: <%= request.getParameter("uploader") %><br>
+EL: ${ param.uploader }<br> --%>
+요청방식: <%= request.getMethod() %><br>
+<%
+File file = new File("C:/dev/workspace/jsp_prj/src/main/webapp/upload");
+%>
 </div>
 </body>
 </html>

@@ -69,6 +69,7 @@ public class BoardUtil {
 		pagination.append(" ... ");
 	 
 		//1,2,3
+		//6. 시작 페이지 번호부터 끝 페이지 번호까지 화면에 출력
 		movePage = startPage;
 		StringBuilder pageLink = new StringBuilder();
 		while(movePage <= endPage){

@@ -14,6 +14,8 @@ public class ProductUtil {
 	public String pagination(SearchVO sVO) {
 		StringBuilder pagination = new StringBuilder();
 		
+		System.out.println(sVO.getTotalCount());
+		
 		if(sVO.getTotalCount() != 0) {
 			//1. 한 화면에 보여줄 페이지 인덱스의 수 설정
 			int pageNumber = 3; // [1][2][3]
@@ -48,7 +50,7 @@ public class ProductUtil {
 					.append("&keyword=")
 					.append(sVO.getKeyword())
 					;
-				}
+				}// end if
 				
 				prevMark.append("\"><i class=\"bi bi-chevron-double-left\" title=\"이전으로\"></i></a>");
 			}//end if
@@ -56,10 +58,63 @@ public class ProductUtil {
 			pagination.append(prevMark);
 			//pagination.append("");
 			
-		}
-		
-		
-		
+			//1,2,3
+			//6. 시작 페이지 번호부터 끝 페이지 번호까지 화면에 출력
+			movePage = startPage;
+			StringBuilder pageLink = new StringBuilder();
+			while(movePage <= endPage){
+				if(movePage == sVO.getCurrentPage()){ // 현재 페이지는 링크 설정 X
+					pageLink.append("<li class=\"page-item\"><a class=\"page-link active\" href='#'>")
+					.append(movePage).append("</a>");
+				} else {// 현재 페이지가 아니면 링크 설정
+					pageLink.append("<li class=\"page-item\"><a class=\"page-link\" href=\"")
+					.append(sVO.getUrl())
+					.append("?currentPage=")
+					.append( movePage);
+					
+					//검색 keyword가 존재할 때
+					if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
+						pageLink.append("&field=")
+						.append(sVO.getField())
+						.append("&keyword=")
+						.append(sVO.getKeyword())
+						;
+					}// end if
+					
+					pageLink.append("\">").append(movePage).append("</a>");
+				}// end else
+				movePage++;
+			}// end while
+			pagination.append(pageLink);
+			
+			//7. 뒤에 페이지가 더 있는 경우
+			StringBuilder nextMark = new StringBuilder();
+			nextMark.append("<li class=\"page-item\"><a class=\"page-link\" href='#'><i class=\"bi bi-chevron-double-right\" title=\"다음으로\"></i></a>");
+			
+			if(sVO.getTotalPage() > endPage){
+				nextMark.delete(0, nextMark.length());
+				movePage = endPage + 1;
+				nextMark.append("<li class=\"page-item\"><a class=\"page-link\" href=\"")
+				.append(sVO.getUrl())
+				.append("?currentPage=")
+				.append(movePage)
+				;
+				
+				//검색 keyword가 존재할 때
+				if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
+					nextMark.append("&field=")
+					.append(sVO.getField())
+					.append("&keyword=")
+					.append(sVO.getKeyword())
+					;
+				}// end if
+				
+				nextMark.append("\"><i class=\"bi bi-chevron-double-right\" title=\"다음으로\"></i></a>");
+			}// end if
+			
+			pagination.append(nextMark);
+			
+		}// end if
 		
 		return pagination.toString();
 	}
