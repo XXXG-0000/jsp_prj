@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 정보 수정</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        h1 { margin-bottom: 20px; }
+        form { max-width: 500px; margin: 0 auto; }
+        label { display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+        button { margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button.cancel { background-color: #f44336; margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <h1>회원 정보 수정</h1>
+
+    <form>
+        <label for="memberNo">회원번호:</label>
+        <input type="text" id="memberNo" name="memberNo" value="1001" readonly>
+        
+        <label for="id">ID:</label>
+        <input type="text" id="id" name="id" value="user1" readonly>
+        
+        <label for="name">이름:</label>
+        <input type="text" id="name" name="name" value="김철수" required>
+        
+        
+        <label for="joinDate">가입일:</label>
+        <input type="date" id="joinDate" name="joinDate" value="2024-01-15" readonly>
+        
+        <label for="grade">회원 등급:</label>
+        <select id="grade" name="grade">
+            <option value="실버">실버</option>
+            <option value="골드">골드</option>
+        </select>
+        
+        <label for="sta">상태</label>
+        <input type="text" id="name" name="sta" value="활동중" required>
+        
+        <label for="phone">전화번호:</label>
+        <input type="tel" id="phone" name="phone" value="010-1234-5678" required>
+        
+        <button type="submit">수정 완료</button>
+    </form>
+</body>
+</html>

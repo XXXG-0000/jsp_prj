@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원관리 UI</title>
+    <link rel="stylesheet" type="text/css" href="./project_main.css">
+
+    <style>
+/*         body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        h1 { margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .search-bar { margin-bottom: 20px; }
+        .search-bar input { padding: 8px; width: 300px; }
+        .search-bar button { padding: 8px 16px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        .actions button { margin-right: 5px; padding: 6px 12px; cursor: pointer; border: none; color: white; }
+        .edit-btn { background-color: #FFD700; }
+        .delete-btn { background-color: #FF0000; }
+        .add-member { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+        
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+        .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
+        .confirm-delete { background-color: #FF0000; color: white; border: none; }
+        .cancel-delete { background-color: #f2f2f2; color: black; border: 1px solid #ddd; } */
+    </style>
+</head>
+<body>
+    <h1>회원 관리 페이지</h1>
+    
+    <div class="search-bar">
+        <input type="text" placeholder="회원 검색...">
+        <button>검색</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>회원번호</th>
+                <th>ID</th>
+                <th>이름</th>
+                <th>가입일</th>
+                <th>회원 등급</th>
+                <th>회원 상태</th>
+                <th>전화번호</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1001</td>
+                <td>user1</td>
+                <td>김철수</td>
+                <td>2024-01-15</td>
+                <td>실버</td>
+                <td>활동</td>
+                <td>010-1234-5678</td>
+                </td>
+            </tr>
+            <tr>
+                <td>1002</td>
+                <td>user2</td>
+                <td>이영희</td>
+                <td>2024-02-20</td>
+                <td>골드</td>
+                <td>활동</td>
+                <td>010-9876-5432</td>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        var modal = document.getElementById("deleteModal");
+        var span = document.getElementsByClassName("close")[0];
+        var deleteConfirmMessage = document.getElementById("deleteConfirmMessage");
+        var userToDelete = "";
+
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        span.onclick = closeModal;
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
