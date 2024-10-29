@@ -1,8 +1,8 @@
 <%@page import="java.sql.SQLException"%>
-<%@page import="project.manager.menu.DrinkDAO"%>
+<%@page import="project.manager.menu.DessertIceDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
-    info="음료 정보 삭제"
+    info="디저트/아이스크림 정보 삭제"
     %>
 <%
 	//인코딩
@@ -16,11 +16,11 @@
 <jsp:setProperty name="pVO" property="*"/>
 
 <%
-	DrinkDAO dDAO = DrinkDAO.getInstance();
+	DessertIceDAO diDAO = DessertIceDAO.getInstance();
 	int rowCnt = 0;
 	
 	try {
-		rowCnt = dDAO.deleteItem(pVO);
+		rowCnt = diDAO.deleteItem(pVO);
 	} catch(SQLException se){
 		rowCnt = -1;
 		System.out.println("상품 삭제 과정에서 문제 발생!");
@@ -52,7 +52,7 @@ if(cnt == 1){
 alert(msg);
 
 if(flag){// 삭제 성공
-	location.href="selectDrinkList.jsp?currentPage=${param.currentPage}";
+	location.href="selectDessertList.jsp?currentPage=${param.currentPage}";
 } else {// 삭제 실패
 	history.back();
 }//end else

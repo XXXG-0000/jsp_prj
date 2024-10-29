@@ -52,7 +52,7 @@ if(cnt == 1){
 alert(msg);
 
 if(flag){// 삭제 성공
-	location.href="selectDrinkList.jsp?currentPage=${param.currentPage}";
+	location.href="selectCoffeeList.jsp?currentPage=${param.currentPage}";
 } else {// 삭제 실패
 	history.back();
 }//end else

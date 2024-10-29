@@ -329,8 +329,7 @@ public class DessertIceDAO {
 			//ITEM_NUM	CAFFEINE	NATRIUM	FATTY_ACID	CALORIE	SUGAR	PROTEIN	
 
 			insertItem
-			.append("	insert into drink_option(icecream_option_num,item_num,add_chocolate,add_strawberry)	")
-			.append("	values(ice_option_seq.nextval,item_seq.currval,?,?)	")
+			.append("	insert into icecream_option values(option_seq.nextval,item_seq.currval,?,?)	")
 			;
 			
 			pstmt = conn.prepareStatement(insertItem.toString());
@@ -501,5 +500,233 @@ public class DessertIceDAO {
 		
 		return ioVO;
 	}
+	
+	/**
+	 * 상품의 정보를 갱신하는 일
+	 * @param pVO
+	 * @return
+	 * @throws SQLException
+	 */
+	public int updateItem(ProductVO pVO) throws SQLException {
+		int rowCnt = 0;
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		DbConnection dbCon = DbConnection.getInstance();
+		
+		try {
+			conn = dbCon.getConn();
+			
+			StringBuilder updateItem = new StringBuilder();
+			updateItem
+			.append("	update	item	")
+			.append("	set		i_name_k=?,i_name_e=?,description=?,image=?,price=?,ingredient_flag=?		")
+			.append("	where	item_num=?	")
+			;
+			
+			pstmt = conn.prepareStatement(updateItem.toString());
+			//바인드 변수에 값 설정
+			pstmt.setString(1, pVO.getiNameK());
+			pstmt.setString(2, pVO.getiNameE());
+			pstmt.setString(3, pVO.getDescription());
+			pstmt.setString(4, pVO.getImage());
+			pstmt.setInt(5, pVO.getPrice());
+			pstmt.setString(6, pVO.getIngredientFlag());
+			pstmt.setInt(7, pVO.getItemNum());
+			
+			//쿼리문 수행 후 결과 얻기
+			rowCnt = pstmt.executeUpdate();
+			//0: 다른 사람이 정보 수정하려고 시도, 1: 정보 수정
+		} finally {
+			dbCon.dbClose(null, pstmt, conn);
+		}// end finally
+		
+		return rowCnt;
+	}//updateItem
+	
+	/**
+	 * 상품의 성분 정보를 갱신하는 일
+	 * @param iVO
+	 * @return
+	 * @throws SQLException
+	 */
+	public int updateIngredient(IngredientVO iVO) throws SQLException {
+		int rowCnt = 0;
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		DbConnection dbCon = DbConnection.getInstance();
+		
+		try {
+			conn = dbCon.getConn();
+			
+			StringBuilder updateIngredient = new StringBuilder();
+			updateIngredient
+			.append("	update	ingredient	")
+			.append("	set		caffeine=?,natrium=?,fatty_acid=?,calorie=?,sugar=?,protein=?		")
+			.append("	where	item_num=?	")
+			;
+			
+			pstmt = conn.prepareStatement(updateIngredient.toString());
+			//바인드 변수에 값 설정
+			pstmt.setInt(1, iVO.getCaffeine());
+			pstmt.setInt(2, iVO.getNatrium());
+			pstmt.setInt(3, iVO.getFattyAcid());
+			pstmt.setInt(4, iVO.getCalorie());
+			pstmt.setInt(5, iVO.getSugar());
+			pstmt.setInt(6, iVO.getProtein());
+			pstmt.setInt(7, iVO.getItemNum());
+			
+			//쿼리문 수행 후 결과 얻기
+			rowCnt = pstmt.executeUpdate();
+			//0: 다른 사람이 정보 수정하려고 시도, 1: 정보 수정
+		} finally {
+			dbCon.dbClose(null, pstmt, conn);
+		}// end finally
+		
+		return rowCnt;
+	}//updateItem
+	
+	/**
+	 * 아이스크림의 옵션 정보를 갱신하는 일
+	 * @param oVO
+	 * @return
+	 * @throws SQLException
+	 */
+	public int updateIcecreamOption(IcecreamOptionVO ioVO) throws SQLException {
+		int rowCnt = 0;
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		DbConnection dbCon = DbConnection.getInstance();
+		
+		try {
+			conn = dbCon.getConn();
+			
+			StringBuilder updateOption = new StringBuilder();
+			updateOption
+			.append("	update	icecream_option	")
+			.append("	set		add_chocolate=?,add_strawberry=?		")
+			.append("	where	item_num=?	")
+			;
+			
+			pstmt = conn.prepareStatement(updateOption.toString());
+			//바인드 변수에 값 설정
+			pstmt.setString(1, ioVO.getAddChocolate());
+			pstmt.setString(2, ioVO.getAddStrawberry());
+			
+			//쿼리문 수행 후 결과 얻기
+			rowCnt = pstmt.executeUpdate();
+			//0: 다른 사람이 정보 수정하려고 시도, 1: 정보 수정
+		} finally {
+			dbCon.dbClose(null, pstmt, conn);
+		}// end finally
+		
+		return rowCnt;
+	}//updateItem
+	
+	/**
+	 * 해당 상품을 삭제 처리하는 일(※ 실제로 삭제하지 않는다. ∵ 매출 처리 등)
+	 * @param pVO
+	 * @return
+	 * @throws SQLException
+	 */
+	public int deleteItem(ProductVO pVO) throws SQLException {
+		int rowCnt = 0;
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		DbConnection dbCon = DbConnection.getInstance();
+		
+		try {
+			conn = dbCon.getConn();
+			
+			StringBuilder deleteItem = new StringBuilder();
+			deleteItem
+			.append("	update	item	")
+			.append("	set		item_flag='Y'	")
+			.append("	where	item_num=?	")
+			;
+			
+			pstmt = conn.prepareStatement(deleteItem.toString());
+			//바인드 변수에 값 설정
+			pstmt.setInt(1, pVO.getItemNum());
+			
+			//쿼리문 수행 후 결과 얻기
+			rowCnt = pstmt.executeUpdate();
+			//0: 다른 사람이 정보 수정하려고 시도, 1: 정보 수정
+		} finally {
+			dbCon.dbClose(null, pstmt, conn);
+		}// end finally
+		
+		return rowCnt;
+	}//deleteItem
+	
+	
+	public int deleteIngredient(IngredientVO iVO) throws SQLException {
+		int rowCnt = 0;
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		DbConnection dbCon = DbConnection.getInstance();
+		
+		try {
+			conn = dbCon.getConn();
+			
+			StringBuilder deleteIngredient = new StringBuilder();
+			deleteIngredient
+			.append("	delete	from ingredient	")
+			.append("	where	item_num=?	")
+			;
+			
+			pstmt = conn.prepareStatement(deleteIngredient.toString());
+			//바인드 변수에 값 설정
+			pstmt.setInt(1, iVO.getItemNum());
+			
+			//쿼리문 수행 후 결과 얻기
+			rowCnt = pstmt.executeUpdate();
+			//0: 다른 사람이 정보 수정하려고 시도, 1: 정보 수정
+		} finally {
+			dbCon.dbClose(null, pstmt, conn);
+		}// end finally
+		
+		return rowCnt;
+	}//deleteItem
+	
+	public int deleteOption(DrinkOptionVO oVO) throws SQLException {
+		int rowCnt = 0;
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		DbConnection dbCon = DbConnection.getInstance();
+		
+		try {
+			conn = dbCon.getConn();
+			
+			StringBuilder deleteOption = new StringBuilder();
+			deleteOption
+			.append("	delete	from drink_option	")
+			.append("	where	item_num=?	")
+			;
+			
+			pstmt = conn.prepareStatement(deleteOption.toString());
+			//바인드 변수에 값 설정
+			pstmt.setInt(1, oVO.getItemNum());
+			
+			//쿼리문 수행 후 결과 얻기
+			rowCnt = pstmt.executeUpdate();
+			//0: 다른 사람이 정보 수정하려고 시도, 1: 정보 수정
+		} finally {
+			dbCon.dbClose(null, pstmt, conn);
+		}// end finally
+		
+		return rowCnt;
+	}//deleteItem
 	
 }// class

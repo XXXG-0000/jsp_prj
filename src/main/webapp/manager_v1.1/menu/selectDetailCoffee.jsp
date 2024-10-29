@@ -232,11 +232,11 @@
     });//ready
 
     function movePage(flag){
-		var action="updateCoffee.jsp";
+		var action="updateCoffeeDrink.jsp";
 		var msg="메뉴를 수정하시겠습니까?";
 		
 		if(flag == 'd'){
-			action = "deleteDrink.jsp";
+			action = "deleteCoffee.jsp";
 			msg = "정말 메뉴를 삭제하시겠습니까?"
 		}// end if
 		
@@ -429,12 +429,12 @@
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2"><strong>음료 상세 보기</strong></h1>
+                <h1 class="h2"><strong>커피 상세 보기</strong></h1>
             </div>
 
 		<div class="form-container">
 
-        <form action="insertDrinkProcess.jsp" name="readFrm" id="readFrm" method="post">
+        <form action="selectCoffeeList.jsp" name="readFrm" id="readFrm" method="post">
             <!-- 음료 이름 -->
             <label for="drink-name">이름</label>
             <input type="text" id="nameKor" name="iNameK" value="${ pVO.iNameK }">

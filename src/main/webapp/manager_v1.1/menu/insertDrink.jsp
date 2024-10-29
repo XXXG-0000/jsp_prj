@@ -386,17 +386,17 @@
 		<form action="insertDrinkProcess.jsp" name="insertFrm" id="insertFrm" method="post" accept-charset="UTF-8">
 		            <!-- 음료 이름 -->
 		            <label for="drink-name">이름</label>
-		            <input type="text" id="nameKor" name="iNameK" placeholder="음료 이름을 입력하세요">
+		            <input type="text" id="nameKor" name="iNameK" placeholder="음료 이름을 입력하세요" value="아메리카노">
 		            <label for="drink-name">영어 이름</label>
-		            <input type="text" id="nameEng" name="iNameE" placeholder="음료 영어 이름을 입력하세요">
+		            <input type="text" id="nameEng" name="iNameE" placeholder="음료 영어 이름을 입력하세요" value="Americano">
 		
 		            <!-- 가격 -->
 		            <label for="drink-price">가격</label>
-		            <input type="text" id="price" name="price" placeholder="가격을 입력하세요">
+		            <input type="text" id="price" name="price" placeholder="가격을 입력하세요" value="1600">
 		
 		            <!-- 설명 -->
 		            <label for="drink-description">설명</label>
-		            <textarea id="description" name="description" rows="4" placeholder="음료 설명을 입력하세요"></textarea>
+		            <textarea id="description" name="description" rows="4" placeholder="음료 설명을 입력하세요">아메아메아메 아메리카노 좋아좋아좋아</textarea>
 		
 		            <!-- 이미지 추가 -->
 		            <label for="drink-image">이미지</label>
@@ -408,7 +408,7 @@
 		            <!-- 카테고리 구분 -->
 		            <fieldset>
 		                <legend>카테고리</legend>
-		                <label>커피<input type="radio" name="categoriesNum" value="0"></label>
+		                <label>커피<input type="radio" name="categoriesNum" value="0" checked="checked"></label>
 		                <label>음료<input type="radio" name="categoriesNum" value="1"></label>
 		            </fieldset>
 		
@@ -492,8 +492,8 @@
 		    <!-- 영양 성분표 제공 여부 -->
 		    <fieldset>
 		    <legend>영양 성분표 제공 여부:</legend>
-		    <label><input type="radio" name="ingredientFlag" value="Y""> 제공</label>
-		    <label><input type="radio" name="ingredientFlag" value="N""> 미제공</label>
+		    <label><input type="radio" name="ingredientFlag" value="Y" checked="checked"> 제공</label>
+		    <label><input type="radio" name="ingredientFlag" value="N"> 미제공</label>
 		
 		    <table id="ingredientTable">
 		        <tr>

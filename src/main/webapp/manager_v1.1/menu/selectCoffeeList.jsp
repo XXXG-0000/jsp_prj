@@ -20,7 +20,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.122.0">
-    <title>음료 관리 페이지</title>
+    <title>커피 관리 페이지</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/dashboard/">
     <link rel="stylesheet" href="http://localhost/jsp_prj/manager/common/css/project_main.css">
     <!-- Custom styles for this template -->

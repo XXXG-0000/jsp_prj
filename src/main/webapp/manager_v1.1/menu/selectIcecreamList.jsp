@@ -4,7 +4,6 @@
 <%@page import="java.util.List"%>
 <%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.SQLClientInfoException"%>
-<%@page import="project.manager.menu.DrinkDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     info="아이스크림 관리"
@@ -294,11 +293,11 @@ function loginMove(){
         </form>
 			<c:set var="loginFlag" value="javascript:loginMove()"/>
 			<c:if test="${ not empty userData }">
-			<c:set var="loginFlag" value="insertDrink.jsp"/>
+			<c:set var="loginFlag" value="insertIcecream.jsp"/>
 			</c:if>
         	<button class="btn btn-primary" style="border:none; float: right; margin-left: 10px; border-radius: 20px; padding: 10px;">
         		<a href="${ loginFlag }" style="color:#FFF; font-weight: bold;">
-        		<svg class="bi"><use xlink:href="#plus-circle"/></svg> 음료 추가</a>
+        		<svg class="bi"><use xlink:href="#plus-circle"/></svg> 아이스크림 추가</a>
         	</button>
         	<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
         </main>

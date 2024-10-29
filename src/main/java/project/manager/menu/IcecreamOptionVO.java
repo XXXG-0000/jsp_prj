@@ -35,6 +35,14 @@ public class IcecreamOptionVO {
 	public void setAddStrawberry(String addStrawberry) {
 		this.addStrawberry = addStrawberry;
 	}
+
+	@Override
+	public String toString() {
+		return "IcecreamOptionVO [icecreamOptionNum=" + icecreamOptionNum + ", itemNum=" + itemNum + ", addChocolate="
+				+ addChocolate + ", addStrawberry=" + addStrawberry + "]";
+	}
+	
+	
 	
 	
 }

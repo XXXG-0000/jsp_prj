@@ -231,11 +231,11 @@
     });//ready
 
     function movePage(flag){
-		var action="updateCoffee.jsp";
+		var action="updateIcecream.jsp";
 		var msg="메뉴를 수정하시겠습니까?";
 		
 		if(flag == 'd'){
-			action = "deleteDrink.jsp";
+			action = "deleteIcecream.jsp";
 			msg = "정말 메뉴를 삭제하시겠습니까?"
 		}// end if
 		
@@ -433,7 +433,7 @@
 
 		<div class="form-container">
 
-        <form action="insertDrinkProcess.jsp" name="readFrm" id="readFrm" method="post">
+        <form action="selectIcecreamList.jsp" name="readFrm" id="readFrm" method="post">
             <!-- 음료 이름 -->
             <label for="drink-name">이름</label>
             <input type="text" id="nameKor" name="iNameK" value="${ pVO.iNameK }">

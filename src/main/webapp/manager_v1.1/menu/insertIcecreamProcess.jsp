@@ -2,7 +2,7 @@
 <%@page import="java.sql.SQLException"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
-    info="디저트 추가 폼의 입력 정보 받기"
+    info="아이스크림 추가 폼의 입력 정보 받기"
     %>
 <%
 	//인코딩
@@ -12,9 +12,13 @@
 
 <jsp:useBean id="pVO" class="project.manager.menu.ProductVO" scope="page"/>
 <jsp:useBean id="iVO" class="project.manager.menu.IngredientVO" scope="page"/>
+<jsp:useBean id="ioVO" class="project.manager.menu.IcecreamOptionVO" scope="page"/>
 <jsp:setProperty property="*" name="pVO"/>
 <jsp:setProperty property="*" name="iVO"/>
-<%-- <%= pVO %> --%>
+<jsp:setProperty property="*" name="ioVO"/>
+<%-- <%= pVO %><br> --%>
+<%-- <%= iVO %><br>
+<%= ioVO %><br> --%>
 <%
 	boolean insertFlag = false;
 	String categorieName = "";
@@ -22,11 +26,13 @@
 		DessertIceDAO diDAO = DessertIceDAO.getInstance();
 		diDAO.insertItem(pVO);			// item 테이블에 insert
 		diDAO.insertIngredient(iVO);		//ingredient 테이블에 insert
+		diDAO.insertIcecreamOption(ioVO);		//icecream_option 테이블에 insert
 		insertFlag = true;
-		pVO.setCategorieName("디저트");
+		pVO.setCategorieName("아이스크림");
 	} catch(SQLException se){
 		se.printStackTrace();
 	}
+	
 	pageContext.setAttribute("insertFlag", insertFlag);
 	pageContext.setAttribute("categorieName", categorieName);
 %>
@@ -59,8 +65,8 @@
 
 	<script type="text/javascript">
 	if(${ insertFlag }){
-		alert("디저트 메뉴 추가에 성공했습니다.");
-		location.href="selectDessertList.jsp"
+		alert("아이스크림 메뉴 추가에 성공했습니다.");
+		location.href="selectIcecreamList.jsp"
 	} else {
 		alert("메뉴 추가에 문제가 발생했습니다. 잠시 후에 다시 시도해주세요.");
 		history.back();

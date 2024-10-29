@@ -4,7 +4,7 @@
     info="아이스크림을 추가하는 페이지"
     %>
 <%--관리자 세션을 검증하는 jsp include--%>
-<jsp:include page="../common/jsp/manager_session_chk.jsp"/>
+<%-- <jsp:include page="../common/jsp/manager_session_chk.jsp"/> --%>
 
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -375,26 +375,26 @@
 
 		<div class="plus-container">
 		
-		        <form>
+		        <form action="insertIcecreamProcess.jsp" name="insertFrm" id="insertFrm" method="post" accept-charset="UTF-8">
 		            <!-- 음료 이름 -->
 		            <label for="icecream-name">이름</label>
-		            <input type="text" id="icecream-name-k" name="INameK" placeholder="아이스크림 이름을 입력하세요" value="빵빠레">
+		            <input type="text" id="nameKor" name="iNameK" placeholder="아이스크림 이름을 입력하세요" value="빵빠레">
 		            <label for="drink-name">영어 이름</label>
-		            <input type="text" id="icecream-name-e" name="INameE" placeholder="아이스크림 영어 이름을 입력하세요" value="fanfare">
+		            <input type="text" id="nameEng" name="iNameE" placeholder="아이스크림 영어 이름을 입력하세요" value="fanfare">
 		
 		            <!-- 가격 -->
 		            <label for="icecream-price">가격</label>
-		            <input type="text" id="icecream-price" name="price" placeholder="가격을 입력하세요" value="3000">
+		            <input type="text" id="price" name="price" placeholder="가격을 입력하세요" value="3000">
 		
 		            <!-- 설명 -->
 		            <label for="icecream-description">설명</label>
-		            <textarea id="icecream-description" name="description" rows="4" placeholder="아이스크림 설명을 입력하세요">빵빠레</textarea>
+		            <textarea id="description" name="description" rows="4" placeholder="아이스크림 설명을 입력하세요">빵빠레</textarea>
 		
 		            <!-- 이미지 추가 -->
 		            <label for="icecream-image">이미지</label>
 		            <div class="image-upload">
 		                <img id="image-preview" src="#" alt="이미지 미리보기" style="display: none;" title="새 파일">
-		                <input type="file" id="icecream-image" name="image" accept="image/*" onchange="previewImage(event)">
+		                <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
 		            </div>
 		
 		            <!-- 카테고리 구분 -->
@@ -470,7 +470,7 @@
 		            <button type="button" class="btn btn-primary" id="btnInsert">추가 메뉴 저장</button>
 		        </form>
 		    </div>
-
+		<canvas class="my-4 w-100" id="myChart" width="900" height="100"></canvas>
         </main>
     </div>
 </div>

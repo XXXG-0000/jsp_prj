@@ -232,7 +232,7 @@
     });//ready
 
     function movePage(flag){
-		var action="updateDrink.jsp";
+		var action="updateCoffeeDrink.jsp";
 		var msg="메뉴를 수정하시겠습니까?";
 		
 		if(flag == 'd'){
@@ -434,7 +434,7 @@
 
 		<div class="form-container">
 
-        <form action="insertDrinkProcess.jsp" name="readFrm" id="readFrm" method="post">
+        <form action="selectDrinkList.jsp" name="readFrm" id="readFrm" method="post">
             <!-- 음료 이름 -->
             <label for="drink-name">이름</label>
             <input type="text" id="nameKor" name="iNameK" value="${ pVO.iNameK }">

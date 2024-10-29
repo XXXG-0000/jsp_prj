@@ -4,7 +4,6 @@
 <%@page import="java.util.List"%>
 <%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.SQLClientInfoException"%>
-<%@page import="project.manager.menu.DrinkDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     info="음료 관리"
@@ -21,7 +20,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.122.0">
-    <title>음료 관리 페이지</title>
+    <title>디저트 관리 페이지</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/dashboard/">
     <link rel="stylesheet" href="http://localhost/jsp_prj/manager/common/css/project_main.css">
     <!-- Custom styles for this template -->
@@ -294,11 +293,11 @@ function loginMove(){
         </form>
 			<c:set var="loginFlag" value="javascript:loginMove()"/>
 			<c:if test="${ not empty userData }">
-			<c:set var="loginFlag" value="insertDrink.jsp"/>
+			<c:set var="loginFlag" value="insertDessert.jsp"/>
 			</c:if>
         	<button class="btn btn-primary" style="border:none; float: right; margin-left: 10px; border-radius: 20px; padding: 10px;">
         		<a href="${ loginFlag }" style="color:#FFF; font-weight: bold;">
-        		<svg class="bi"><use xlink:href="#plus-circle"/></svg> 음료 추가</a>
+        		<svg class="bi"><use xlink:href="#plus-circle"/></svg> 디저트 추가</a>
         	</button>
         	<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
         </main>

@@ -363,7 +363,7 @@ public class DrinkDAO {
 
 			insertItem
 			.append("	insert into drink_option(drink_option_num,item_num,size_s,size_m,size_l,shot,syrup,multi_cup)	")
-			.append("	values(drink_option_seq.nextval,item_seq.currval,?,?,?,?,?,?)	")
+			.append("	values(option_seq.nextval,item_seq.currval,?,?,?,?,?,?)	")
 			;
 			
 			pstmt = conn.prepareStatement(insertItem.toString());
