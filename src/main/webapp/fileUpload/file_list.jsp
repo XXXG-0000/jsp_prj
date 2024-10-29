@@ -65,17 +65,34 @@ $(function(){
 		<%
 			int ind = 0;
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd EEEE HH:mm:ss");
+			String fileName = "";
+			//확장자가 jpg,gif,png,bmp,txt,js,css,html인 경우에는 링크를 설정하여
+			//웹 브라우저에서 보이도록
+			boolean linkFlag = false;
+			String linkExt = "jpg,gif,png,bmp,txt,js,css,html";
+			
 			for(File tempFile : listFile){%>
 			<tr>
-			<td><%= ++ind %></td>	
+			<td><%= ind+1 %></td>	
 			<td>
-			<img src="../upload/<%= tempFile.getName() %>" style="width:100px; height:50px;" />
+			<%-- <img src="../upload/<%= tempFile.getName() %>" style="width:100px; height:50px;" /> --%>
 			</td>
-			<td><%= tempFile.getName() %></td>
+			<td>
+			<%
+				fileName = tempFile.getName();
+				linkFlag = linkExt.substring(fileName.lastIndexOf(".")+1).contains(linkExt);
+				if(linkFlag){
+				%>
+				<a href="../upload/<%= fileName %>">	
+				<%}//end if	%>
+			<%= fileName %>
+			<% if(linkFlag){ out.print("</a>"); } %>
+			(<a href="download.jsp?fileName=<%= tempFile.getName() %>">다운로드</a>)</td>
 			<td><%= tempFile.length() %></td>
 			<td><%= sdf.format( new Date (tempFile.lastModified()) ) %></td>
 			</tr>
-			<% }// end for%>
+			<% ind++;
+			}// end for%>
 		</c:otherwise>
 		</c:choose>
 		</tbody>

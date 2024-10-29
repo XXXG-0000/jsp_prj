@@ -3,6 +3,10 @@
     info=""
     %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+	//이동한 페이지에서 새로고침했을 때 작업이 여러 번 발생하지 않도록 하기 위한 flag값 저장
+	session.setAttribute("uploadFlag", false); 
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -77,6 +81,7 @@ function chkNull(){
 <div id="wrap">
 <!-- HTML 영역 => HTML 태그 작성, CSS 정의한 디자인 적용, JS에서 동적인 디자인 생성 보여주는 일, JS에서 HTML Form Control에 입력된 값을 
 	유효성 검증 수행 => onxxx속성 사용 -->
+
 <a href="file_list.jsp">파일 리스트 보기</a>
 <form action="upload_process.jsp" method="post" enctype="multipart/form-data" id="frm">
 <label>업로더</label>

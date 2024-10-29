@@ -6,6 +6,9 @@
     info="multipart/form-data인 경우 web parameter가 전달되지 않는다."
     %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+	session.getAttribute("flag");
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,6 +46,13 @@ web parameter가 전달되지 않는다.
 EL: ${ param.uploader }<br> --%>
 요청방식: <%= request.getMethod() %><br>
 <%
+	//flag 받기
+	boolean uploadFlag = ((Boolean)session.getAttribute("uploadFlag")).booleanValue();
+
+	if(!uploadFlag){
+%>
+<%
+/* String fileName = request.getParameter("upfile"); */
 //1. 파일 경로 설정
 File saveDir = new File("C:/dev/workspace/jsp_prj/src/main/webapp/upload");
 
@@ -66,12 +76,14 @@ try{
 	//업로드 된 파일이 최대 크기를 초과하는지 체크
 	File uploadFile = new File(saveDir.getAbsoluteFile() + "/" + fileSysName);
 	//out.println(uploadFile);
+	
+	
 	if( uploadFile.length() > maxSize ){ // 업로드 최대 크기를 초과
 		uploadFile.delete(); // 업로드 된 파일 삭제
 	%>
 	<%= originName %>은 10Mbyte( <%= maxSize %> byte)를 초과합니다.<br>
 	업로드 파일의 크기 내의 파일로 변환하여 업로드 해주세요.<br>
-	<a href="upload_frm.jsp">뒤로</a>	
+	<a href="javascript:history.back()">뒤로</a>	
 	<%
 	} else {// 최대 크기에 맞을 경우	
 	%>
@@ -103,7 +115,8 @@ try{
 	<%
 }//end catch
 
-
+session.setAttribute("uploadFlag", true);
+}// end if
 %>
 </div>
 </body>
