@@ -42,6 +42,32 @@ function chkNull(){
 		return;
 	}//end if
 	
+	//업로드 가능 확장자는 이미지 관련 확장자만 가능하도록 유효성 검증
+	// jpg, gif, png, bmp 확장자만 업로드 가능
+	// 위 확장자가 아니면 alert("업로드 가능 확장자가 아닙니다.")를 보여주고 리턴
+/* 	if( file.indexOf(".jpg") == -1 || file.indexOf(".gif") == -1 || file.indexOf(".png") == -1 || file.indexOf(".bmp") == -1 ){
+		alert("업로드 가능 확장자가 아닙니다.");
+		return;
+	} */
+	
+	var file = $("#upfile").val();
+	const blockExt = ["jpg","gif","png","bmf"];
+	var fileExt = file.substring(file.lastIndexOf(".")+1);
+	
+	var blockFlag = false;
+	for(var i = 0; i < blockExt.length; i++){
+		if(blockExt[i] == fileExt){
+			blockFlag=true;
+			break;
+		}//end if
+	}//end if
+	
+	if(!blockFlag){
+		alert("업로드 가능 확장자가 아닙니다.");
+		return;
+	}
+	
+	
 	$("#frm").submit();
 }//chkNull
 
@@ -51,9 +77,17 @@ function chkNull(){
 <div id="wrap">
 <!-- HTML 영역 => HTML 태그 작성, CSS 정의한 디자인 적용, JS에서 동적인 디자인 생성 보여주는 일, JS에서 HTML Form Control에 입력된 값을 
 	유효성 검증 수행 => onxxx속성 사용 -->
+<a href="file_list.jsp">파일 리스트 보기</a>
 <form action="upload_process.jsp" method="post" enctype="multipart/form-data" id="frm">
 <label>업로더</label>
-<input type="text" name="uploader" /><br>
+<input type="text" name="uploader" id="uploader"/><br>
+
+<label>파일확장자</label>
+<input type="checkbox" name="ext" value="jpg" />jpg
+<input type="checkbox" name="ext" value="png" />png
+<input type="checkbox" name="ext" value="exe" />exe
+<input type="checkbox" name="ext" value="hwp" />hwp
+<br>
 <label>파일</label>
 <input type="file" name="upfile" id="upfile" /><br>
 <input type="button" value="업로드" id="btn" class="btn btn-primary btn-sm" /><br>
