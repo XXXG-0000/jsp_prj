@@ -43,9 +43,7 @@ public class ProductUtil {
 				
 				//검색 keyword가 존재할 때
 				if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
-					prevMark.append("&field=")
-					.append(sVO.getField())
-					.append("&keyword=")
+					prevMark.append("&keyword=")
 					.append(sVO.getKeyword())
 					;
 				}// end if
@@ -72,9 +70,7 @@ public class ProductUtil {
 					
 					//검색 keyword가 존재할 때
 					if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
-						pageLink.append("&field=")
-						.append(sVO.getField())
-						.append("&keyword=")
+						pageLink.append("&keyword=")
 						.append(sVO.getKeyword())
 						;
 					}// end if
@@ -100,9 +96,7 @@ public class ProductUtil {
 				
 				//검색 keyword가 존재할 때
 				if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
-					nextMark.append("&field=")
-					.append(sVO.getField())
-					.append("&keyword=")
+					nextMark.append("&keyword=")
 					.append(sVO.getKeyword())
 					;
 				}// end if

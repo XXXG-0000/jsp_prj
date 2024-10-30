@@ -5,7 +5,7 @@ package project.manager.menu;
  */
 public class SearchVO {
 	private int startNum, endNum, currentPage, totalPage, totalCount; // 시작번호, 끝번호, 현재 페이지 번호, 총 페이지 수 
-	private String field="0", keyword, url;// 검색할 field에 대응되는 숫자, 검색 키워드
+	private String keyword, url;// 검색할 field에 대응되는 숫자, 검색 키워드
 
 	public int getStartNum() {
 		return startNum;
@@ -29,14 +29,6 @@ public class SearchVO {
 
 	public void setCurrentPage(int currentPage) {
 		this.currentPage = currentPage;
-	}
-
-	public String getField() {
-		return field;
-	}
-
-	public void setField(String field) {
-		this.field = field;
 	}
 
 	public String getKeyword() {
@@ -74,12 +66,8 @@ public class SearchVO {
 	@Override
 	public String toString() {
 		return "SearchVO [startNum=" + startNum + ", endNum=" + endNum + ", currentPage=" + currentPage + ", totalPage="
-				+ totalPage + ", totalCount=" + totalCount + ", field=" + field + ", keyword=" + keyword + ", url="
-				+ url + "]";
+				+ totalPage + ", totalCount=" + totalCount + ", keyword=" + keyword + ", url=" + url + "]";
 	}
-
-
-
 
 	
 

@@ -11,6 +11,8 @@ public class TestVO {
 	
 	public TestVO(String name, int age) {
 		System.out.println("Overloading된 생성자");
+		this.name = name;
+		this.age = age;
 	}// TestVO
 
 	public String getName() {

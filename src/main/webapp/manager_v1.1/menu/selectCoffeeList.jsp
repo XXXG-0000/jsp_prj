@@ -164,7 +164,7 @@ function loginMove(){
         </div>
         
         <jsp:useBean id="sVO" class="project.manager.menu.SearchVO" scope="page"/>
-        <jsp:setProperty property="*" name="dsVO"/>
+        <jsp:setProperty property="*" name="sVO"/>
         <%
         //게시판 리스트 구현
         //1-1. 총 커피 레코드 수 구하기

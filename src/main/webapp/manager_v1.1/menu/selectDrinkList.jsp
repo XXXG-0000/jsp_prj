@@ -272,7 +272,8 @@ function loginMove(){
         <tr>
         	<!-- var.VO의 변수명 -->
         	<td><c:out value="${ pVO.itemNum }"/></td>
-        	<td><c:out value="${ pVO.iNameK }"/></td>
+        	<td><a href="selectDetailDrink.jsp?itemNum=${ pVO.itemNum }&currentPage=${ currentPage }">
+        	<c:out value="${ pVO.iNameK }"/></a></td>
         	<td><c:out value="${ pVO.price }"/></td>
         	<td><c:out value="${ pVO.categorieName }"/></td>
         </tr>

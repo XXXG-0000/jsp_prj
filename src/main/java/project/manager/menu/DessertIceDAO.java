@@ -54,9 +54,19 @@ public class DessertIceDAO {
 			.append("	from 	item						")
 			.append("	where 	categories_num = 2 AND item_flag='N'		")
 			;
+			
+			//dynamic query: 검색 키워드를 판단 기준으로 where절이 동적으로 생성
+			if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
+				selectCount.append("	AND instr(i_name_k,?) != 0"	);
+			}// end if
+			
 			// (categories_num = 2) = 디저트
 			pstmt = conn.prepareStatement(selectCount.toString());
 		//5. 바인드 변수 값 설정
+			//dynamic query
+			if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
+				pstmt.setString(1, sVO.getKeyword());
+			}// end if
 		//6. 쿼리문 수행 후 결과 얻기
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
@@ -95,9 +105,19 @@ public class DessertIceDAO {
 			.append("	from 	item						")
 			.append("	where 	categories_num = 3 AND item_flag='N'		")
 			;
-			// (categories_num = 2) = 디저트
+			
+			//dynamic query: 검색 키워드를 판단 기준으로 where절이 동적으로 생성
+			if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
+				selectCount.append("	AND instr(i_name_k,?) != 0"	);
+			}// end if
+			
 			pstmt = conn.prepareStatement(selectCount.toString());
 			//5. 바인드 변수 값 설정
+			//dynamic query
+			if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
+				pstmt.setString(1, sVO.getKeyword());
+			}// end if
+			
 			//6. 쿼리문 수행 후 결과 얻기
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
@@ -130,8 +150,8 @@ public class DessertIceDAO {
 			//connection 열기
 			conn = dbCon.getConn();
 			// 쿼리문 생성객체 얻기
-			StringBuilder selectCoffeeBoard = new StringBuilder();
-			selectCoffeeBoard
+			StringBuilder selectDessertBoard = new StringBuilder();
+			selectDessertBoard
 			.append("	select 	item_num,item_name,price,category_name	")
 			.append("	from (select item_num,i_name_k item_name,price,(select categorie_name from categories	")
 			.append("	where 	categories.categories_num = item.categories_num) category_name, item_flag,	")
@@ -141,10 +161,20 @@ public class DessertIceDAO {
 			.append("	where rnum between ? and ? and item_flag='N'	")
 			;
 			
-			pstmt = conn.prepareStatement(selectCoffeeBoard.toString());
+			//dynamic query: 검색 키워드를 판단 기준으로 where절이 동적으로 생성
+			if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
+				selectDessertBoard.append("	AND instr(item_name,?) != 0"	);
+			}// end if
+			
+			pstmt = conn.prepareStatement(selectDessertBoard.toString());
 			//바인드 변수에 값 설정
 			pstmt.setInt(1, sVO.getStartNum());
 			pstmt.setInt(2, sVO.getEndNum());
+			
+			//dynamic query
+			if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
+				pstmt.setString(3, sVO.getKeyword());
+			}// end if
 			
 			//쿼리문 수행 후 결과 얻기
 			rs = pstmt.executeQuery();
@@ -187,8 +217,8 @@ public class DessertIceDAO {
 			//connection 열기
 			conn = dbCon.getConn();
 			// 쿼리문 생성객체 얻기
-			StringBuilder selectCoffeeBoard = new StringBuilder();
-			selectCoffeeBoard
+			StringBuilder selectIcecreamBoard = new StringBuilder();
+			selectIcecreamBoard
 			.append("	select 	item_num,item_name,price,category_name	")
 			.append("	from (select item_num,i_name_k item_name,price,(select categorie_name from categories	")
 			.append("	where 	categories.categories_num = item.categories_num) category_name, item_flag,	")
@@ -198,10 +228,20 @@ public class DessertIceDAO {
 			.append("	where rnum between ? and ? and item_flag='N'	")
 			;
 			
-			pstmt = conn.prepareStatement(selectCoffeeBoard.toString());
+			//dynamic query: 검색 키워드를 판단 기준으로 where절이 동적으로 생성
+			if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
+				selectIcecreamBoard.append("	AND instr(item_name,?) != 0"	);
+			}// end if
+			
+			pstmt = conn.prepareStatement(selectIcecreamBoard.toString());
 			//바인드 변수에 값 설정
 			pstmt.setInt(1, sVO.getStartNum());
 			pstmt.setInt(2, sVO.getEndNum());
+			
+			//dynamic query
+			if(sVO.getKeyword() != null && !"".equals(sVO.getKeyword())) {
+				pstmt.setString(3, sVO.getKeyword());
+			}// end if
 			
 			//쿼리문 수행 후 결과 얻기
 			rs = pstmt.executeQuery();

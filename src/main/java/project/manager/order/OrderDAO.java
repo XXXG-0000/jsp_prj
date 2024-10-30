@@ -119,13 +119,11 @@ public class OrderDAO {
 			//쿼리문 생성 객체 얻기
 			StringBuilder selectNotReceivedList = new StringBuilder();
 			selectNotReceivedList
-			.append("	select cart_item_num,i_name,name,input_date,quantity,receipt_flag	")
-			.append("	from(select LPAD(cart_item_num, 3, '0')cart_item_num,(select i_name_k from item where item.item_num = cart_item.item_num)i_name,	")
-			.append("	(select cus.name from	customer cus inner join	cart c on cus.cus_id = c.cus_id	")
-			.append("	inner join cart_item ci on ci.cart_num = c.cart_num where c.cart_num = 0 and ci.cart_item_num = 0)name,	")
-			.append("	input_date,quantity,receipt_flag,row_number() over(order by input_date asc) rnum	")
-			.append("	from cart_item	")
-			.append("	where receipt_flag = 'N')	")
+			.append("	select cart_item_num, i_name_k, name, input_date, quantity, receipt_flag	")
+			.append("	from(select LPAD(ci.cart_item_num,3,'0')cart_item_num, i.i_name_k, cus.name, ci.input_date, ci.quantity, ci.receipt_flag,	")
+			.append("	row_number() over(order by ci.input_date asc) rnum	")
+			.append("	from cart_item ci, cart c, customer cus, item i	")
+			.append("	where ci.item_num = i.item_num and cus.cus_id = c.cus_id and c.cart_num = ci.cart_num and receipt_flag='N')	")
 			.append("	where rnum between ? and ?	")
 			;
 			
@@ -141,7 +139,7 @@ public class OrderDAO {
 			while(rs.next()) {
 				oVO = new OrderVO();
 				oVO.setCartItemNum(rs.getString("cart_item_num"));
-				oVO.setiNameK(rs.getString("i_name"));
+				oVO.setiNameK(rs.getString("i_name_k"));
 				oVO.setName(rs.getString("name"));
 				oVO.setInputDate(rs.getDate("input_date"));
 				oVO.setQuantity(rs.getInt("quantity"));
@@ -179,14 +177,13 @@ public class OrderDAO {
 			//쿼리문 생성 객체 얻기
 			StringBuilder selectNotReceivedList = new StringBuilder();
 			selectNotReceivedList
-			.append("	select cart_item_num,i_name,name,input_date,quantity,receipt_flag	")
-			.append("	from(select LPAD(cart_item_num, 3, '0')cart_item_num,(select i_name_k from item where item.item_num = cart_item.item_num)i_name,	")
-			.append("	(select cus.name from	customer cus inner join	cart c on cus.cus_id = c.cus_id	")
-			.append("	inner join cart_item ci on ci.cart_num = c.cart_num where c.cart_num = 0 and ci.cart_item_num = 0)name,	")
-			.append("	input_date,quantity,receipt_flag,row_number() over(order by input_date asc) rnum	")
-			.append("	from cart_item	")
-			.append("	where receipt_flag = 'Y')	")
+			.append("	select cart_item_num, i_name_k, name, input_date, quantity, receipt_flag	")
+			.append("	from(select LPAD(ci.cart_item_num,3,'0')cart_item_num, i.i_name_k, cus.name, ci.input_date, ci.quantity, ci.receipt_flag,	")
+			.append("	row_number() over(order by ci.input_date asc) rnum	")
+			.append("	from cart_item ci, cart c, customer cus, item i	")
+			.append("	where ci.item_num = i.item_num and cus.cus_id = c.cus_id and c.cart_num = ci.cart_num and receipt_flag='Y')	")
 			.append("	where rnum between ? and ?	")
+			;
 			;
 			
 			pstmt = conn.prepareStatement(selectNotReceivedList.toString());
@@ -201,7 +198,7 @@ public class OrderDAO {
 			while(rs.next()) {
 				oVO = new OrderVO();
 				oVO.setCartItemNum(rs.getString("cart_item_num"));
-				oVO.setiNameK(rs.getString("i_name"));
+				oVO.setiNameK(rs.getString("i_name_k"));
 				oVO.setName(rs.getString("name"));
 				oVO.setInputDate(rs.getDate("input_date"));
 				oVO.setQuantity(rs.getInt("quantity"));
