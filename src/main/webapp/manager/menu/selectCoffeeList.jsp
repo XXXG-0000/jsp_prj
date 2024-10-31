@@ -1,20 +1,26 @@
+<%@page import="project.manager.util.ProductUtil"%>
+<%@page import="project.manager.menu.ProductVO"%>
+<%@page import="java.util.List"%>
+<%@page import="java.sql.SQLException"%>
+<%@page import="java.sql.SQLClientInfoException"%>
+<%@page import="project.manager.menu.DrinkDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     info="음료 관리"
     %>
 <%--관리자 세션을 검증하는 jsp include--%>
 <jsp:include page="../common/jsp/manager_session_chk.jsp"/>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
 <head><script src="/docs/5.3/assets/js/color-modes.js"></script>
-<!-- 이쪽이 진짜 -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.122.0">
-    <title>음료 관리 페이지</title>
+    <title>커피 관리 페이지</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/dashboard/">
     <link rel="stylesheet" href="http://localhost/jsp_prj/manager/common/css/project_main.css">
     <!-- Custom styles for this template -->
@@ -79,48 +85,37 @@
 <script type="text/javascript">
 //탭을 보여주는 함수
 $(function(){
-	$("#btnradio1").click(function(){
-		showTab('coffeeChart');
+	$("#keyword").keyup(function(evt){
+		if(evt.which == 13){
+			chkNull();
+		}//end if
+	});//keyup
+	
+	$("#btn").click(function(){
+		chkNull();
 	});//click
 	
-	$("#btnradio2").click(function(){
-		showTab('drinkChart');
-	});//click
+	// 검색으로 선택한 컬럼명과 키워드 설정, JSP 코드로 작성 가능
+	if(${ not empty param.keyword }){
+		$("#keyword").val("${ param.keyword }");
+	}
 });//ready
 
-function showTab(tab) {
-    document.getElementById('coffeeChart').classList.add('hidden');
-    document.getElementById('drinkChart').classList.add('hidden');
-    document.getElementById(tab).classList.remove('hidden');
-    
-    let tabs = document.querySelectorAll('.tab');
-    tabs.forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-}
- 
-/*  $(document).on('change', 'input:radio[id^="btnradio"]', function (event) {
-	    //alert("click fired");
-	 	event.stopImmediatePropagation();
-	 $("#btnradio1").click(function(event){
-	    //alert("click fired");
-	 	event.stopImmediatePropagation();
-		var t1 = document.getElementById("coffeeChart");
-		var t2 = document.getElementById("drinkChart");
-		
-		t1.style.display = "block";
-		t2.style.display = "none";
-	});//click
+function chkNull(){
+	var keyword = $("#keyword").val();
+	if(keyword.length < 2){
+		alert("검색 키워드는 한 글자 이상 입력하셔야 합니다.");
+		return;
+	}//end if
 	
-	$("#btnradio2").click(function(event){
-	    //alert("click fired");
-	 	event.stopImmediatePropagation();
-		var t1 = document.getElementById("coffeeChart");
-		var t2 = document.getElementById("drinkChart");
-		
-		t1.style.display = "none";
-		t2.style.display = "block";
-	});//click
-});//ready */
+	$("#searchFrm").submit();
+}//chkNull
+
+function loginMove(){
+	if(confirm("로그인 한 사용자만 메뉴 추가가 가능합니다.\n로그인 하시겠습니까?")){
+		location.href="../index.jsp";
+	}//end if
+}// loginMove
 </script>
 
     <!-- Custom styles for this template -->
@@ -190,21 +185,96 @@ function showTab(tab) {
                 </div>
             </div>
         </div>
-	
+        
+        <jsp:useBean id="sVO" class="project.manager.menu.SearchVO" scope="page"/>
+        <jsp:setProperty property="*" name="sVO"/>
+        <%
+        //게시판 리스트 구현
+        //1-1. 총 커피 레코드 수 구하기
+        
+        int totalCount = 0;
+        DrinkDAO dDAO = DrinkDAO.getInstance();
+        try{
+        	totalCount = dDAO.selectTotalCountCoffee(sVO);
+        	//System.out.println(totalCount);
+        } catch(SQLException se){
+        	se.printStackTrace();
+        }
+        //2-1. 한 화면에 보여줄 커피 레코드의 수
+        int pageScale = 10;
+        
+        //3-1. 총 커피 페이지 수
+        int totalPage = (int)Math.ceil((double)totalCount/pageScale);
+        
+        //4-1 커피 검색의 시작 번호를 구하기(pagination의 번호)
+        String paramPage = request.getParameter("currentPage");
+        
+        int currentPage = 1;
+        if(paramPage != null){
+        	try{
+        		currentPage = Integer.parseInt(paramPage);
+        	} catch(NumberFormatException nfe) {
+        		nfe.printStackTrace();
+        	}// end catch
+        }//end if
+        
+        int startNum = currentPage * pageScale - pageScale + 1; // 커피 시작 번호
+        
+        // 5-1. 끝 번호 구하기
+        int endNum = startNum + pageScale - 1; // 커피 끝 번호
+        
+        sVO.setCurrentPage(currentPage);
+        sVO.setStartNum(startNum);
+        sVO.setEndNum(endNum);
+        sVO.setTotalPage(totalPage);
+        sVO.setTotalCount(totalCount);
+        
+        //out.print(sVO);
+               
+        //System.out.println(csVO.getStartNum() + ", " + csVO.getEndNum());
+        
+        List<ProductVO> listBoard = null;
+        try{
+        	listBoard = dDAO.selectCoffeeBoard(sVO);//시작 번호, 끝 번호를 사용한 게시글 조회
+        	
+/*         	String tempName="";
+        	for(ProductVO tempVO : listBoard){
+        		tempName = tempVO.getiNameK();
+        		if(tempName.length() > 30){
+        			tempVO.setiNameK(tempName.substring(0,29) + "...");
+        		}// end if
+        	}// end for */
+        } catch(SQLException se){
+        	se.printStackTrace();
+        }//end catch
+        
+   	 	pageContext.setAttribute("totalCount", totalCount);
+    	pageContext.setAttribute("pageScale", pageScale); 
+    	pageContext.setAttribute("totalPage", totalPage);
+     	pageContext.setAttribute("currentPage", currentPage);
+    	pageContext.setAttribute("startNum", startNum);
+    	pageContext.setAttribute("endNum", endNum);	 
+    	pageContext.setAttribute("listBoard", listBoard);	
+        
+        %>
+<%-- 	총 게시물의 수: <c:out value="${ totalCount }"/><br>
+	한 화면에 보여줄 게시물의 수: <c:out value="${ pageScale }"/><br>
+	총 페이지 수: <c:out value="${ totalPage }"/><br>
+	현재 페이지: <c:out value="${ currentPage }"/><br>
+	게시글의 시작 번호: <c:out value="${ startNum }"/><br>
+	게시글의 끝 번호: <c:out value="${ endNum }"/><br> --%>	
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2"><strong>음료 관리</strong></h1>
+                <h1 class="h2"><strong>커피 메뉴 관리</strong></h1>
             </div>
-			<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" style="margin-bottom: 10px;">
-			 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-			  <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-			  <label class="btn btn-outline-primary" for="btnradio1" class="btnradio1">커피</label>
-			
-			  <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-			  <label class="btn btn-outline-primary" for="btnradio2" class="btnradio2">음료</label>
-			</div>
-			</div>
-		<form>
+		<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="margin-bottom: 30px;">
+		  <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+		  <label class="btn btn-outline-primary" for="btnradio1"><a href="selectCoffeeList.jsp" style="color:#FFF; font-weight: bold;">커피 메뉴</a></label>
+		
+		  <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+		  <label class="btn btn-outline-primary" for="btnradio2"><a href="selectDrinkList.jsp" style="color:#0d6efd;">음료 메뉴</a></label>
+		</div>
+		<div id="coffeeList" style="width: 750px; margin: 0 auto;">
         <table id="coffeeChart">
         <thead>
             <tr>
@@ -215,138 +285,56 @@ function showTab(tab) {
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/더블에스프레소-2-450x588.png">
-                <a href="updateDrink.jsp">더블에스프레소</a></td>
-                <td>1,500</td>
-                <td>커피</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/HOT-앗메리카노-450x588.png">
-                <a href="updateDrink.jsp">아메리카노(HOT)</a></td>
-                <td>1,500</td>
-                <td>커피</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/ICED-앗메리카노-450x588.png">
-                <a href="updateDrink.jsp">아메리카노(ICED)</a></td>
-                <td>2,000</td>
-                <td>커피</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/HOT-원조커피-450x588.png">
-                <a href="updateDrink.jsp">원조커피(HOT)</a></td>
-                <td>2,500</td>
-                <td>커피</td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/슈크리미-라떼HOT-450x588.png">
-                <a href="updateDrink.jsp">슈크리미 라떼(HOT)</a></td>
-                <td>4,000</td>
-                <td>커피</td>
-            </tr>
-            <tr>
-                <td>6</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/슈크리미-라떼ICED-450x588.png">
-                <a href="updateDrink.jsp">슈크리미 라떼(ICED)</a></td>
-                <td>4,000</td>
-                <td>커피</td>
-            </tr>
-        </tbody>
-        </table>
+        <c:if test="${ empty listBoard }">
+        <tr>
+        	<td style="text-align: center" colspan="4">
+        	현재 메뉴가 없습니다.<br>
+        	<a href="insertDrink.jsp">메뉴 추가</a>
+        	</td>
+        </tr>
+        </c:if>
         
-        <table id="drinkChart" class="hidden">
-        <thead>
-            <tr>
-                <th style="width: 100px;">상품번호</th>
-                <th>음료 이름</th>
-                <th style="width: 100px;">가격</th>
-                <th style="width: 100px;">카테고리</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/뱅쇼hot_thumb-450x588.png">
-                <a href="updateDrink.jsp">뱅쇼(HOT)</a></td>
-                <td>3,800</td>
-                <td>음료</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/뱅쇼iced_thumb-450x588.png">
-                <a href="updateDrink.jsp">뱅쇼(ICED)</a></td>
-                <td>3,800</td>
-                <td>음료</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/우리쌀라떼-핫-450x588.png">
-                <a href="updateDrink.jsp">우리쌀 라떼(HOT)</a></td>
-                <td>3,500</td>
-                <td>음료</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/우리쌀라떼-아이스-450x588.png">
-                <a href="updateDrink.jsp">우리쌀 라떼(HOT)</a></td>
-                <td>4,000</td>
-                <td>음료</td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/우리쌀쉐이크-450x588.png">
-                <a href="updateDrink.jsp">우리쌀 라떼(HOT)</a></td>
-                <td>4,000</td>
-                <td>음료</td>
-            </tr>
-            <tr>
-                <td>6</td>
-                <td><img id="drinkImg" src="http://localhost/jsp_prj/manager/common/image/구아바크림주스-450x588.png">
-                <a href="updateDrink.jsp">우리쌀 라떼(HOT)</a></td>
-                <td>4,300</td>
-                <td>음료</td>
-            </tr>
+        <c:if test="${ not empty param.keyword }"> <!-- 파라메터 변수가 있을 경우 -->
+		<c:set var="searchParam" value="&keyword=${ param.keyword }"/>
+		</c:if>
+        
+        <c:forEach var="pVO" items="${ listBoard }" varStatus="i">
+        <tr>
+        	<!-- var.VO의 변수명 -->
+        	<td><c:out value="${ pVO.itemNum }"/></td>
+        	<td><a href="selectDetailCoffee.jsp?itemNum=${ pVO.itemNum }&currentPage=${ currentPage }${ searchParam }">
+        	<c:out value="${ pVO.iNameK }"/></a></td>
+        	<td><c:out value="${ pVO.price }"/></td>
+        	<td><c:out value="${ pVO.categorieName }"/></td>
+        </tr>
+        </c:forEach>
         </tbody>
         </table>
-        </form>
-             <ul class="pagination justify-content-center">
-                		<li class="page-item">
-						<a class="page-link" href="#">
-						<i class="bi bi-chevron-double-left" title="최신 글 보기"></i></a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">
-						<i class="bi bi-chevron-left"></i></a>
-						</li>
-						<li class="page-item active">
-						<a class="page-link" href="#">1</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">2</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">3</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">
-						<i class="bi bi-chevron-right"></i></a>
-						</li>
-                		<li class="page-item">
-						<a class="page-link" href="#">
-						<i class="bi bi-chevron-double-right" title="마지막 글 보기"></i></a>
-						</li>
-					</ul>
+        <!-- search -->
+		<div id="search" style="width: 750px; height: 60px; text-align: center;">
+		<form action="selectCoffeeList.jsp" method="get" id="searchFrm" name="searchFrm">
+			<input type="text" name="keyword" id="keyword" style="width: 200px"/>
+			<input type="button" value="검색" id="btn"  class="btn btn-primary btn-sm"/>
+		</form>
+			<input type="text" name="keyword" style="display: none"/><!-- 엔터키 눌러도 검색되는 것을 방지 -->
+		</div> 
+		<!-- search end -->
+		<!-- pagination -->
+		<ul class="pagination justify-content-center">
+		<% sVO.setUrl("selectCoffeeList.jsp"); %>
+		<%= new ProductUtil().pagination(sVO) %>
+		</ul>
+		<!-- pagination end -->
+        </div>
+			<c:set var="loginFlag" value="javascript:loginMove()"/>
+			<c:if test="${ not empty managerId }">
+			<c:set var="loginFlag" value="insertDrink.jsp"/>
+			</c:if>
         	<button class="btn btn-primary" style="border:none; float: right; margin-left: 10px; border-radius: 20px; padding: 10px;">
-        		<a href="insertDrink.jsp" style="color:#FFF; font-weight: bold;">
+        		<a href="${ loginFlag }" style="color:#FFF; font-weight: bold;">
         		<svg class="bi"><use xlink:href="#plus-circle"/></svg> 음료 추가</a>
         	</button>
-            <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+        	<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
         </main>
     </div>
 </div>

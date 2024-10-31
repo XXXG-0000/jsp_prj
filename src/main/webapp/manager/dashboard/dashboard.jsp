@@ -1,12 +1,15 @@
+<%@ page import="project.manager.dashboard.DashboardDAO" %>
+<%@ page import="java.sql.SQLException" %>
+<%@ page import="java.util.Arrays" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"
-    info="대시보드 페이지"
+         pageEncoding="UTF-8"
+         info="대시보드 페이지"
     %>
 <%--관리자 세션을 검증하는 jsp include--%>
-<jsp:include page="../common/jsp/manager_session_chk.jsp"/>
+<%@ include file="../common/jsp/manager_session_chk.jsp"%>
 
 <!doctype html>
-<html lang="en" data-bs-theme="auto">
+<html lang="kor" data-bs-theme="auto">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -69,14 +72,16 @@
     <link href="https://getbootstrap.com/docs/5.3/examples/dashboard/dashboard.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jQuery CDN 시작 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
 </head>
 <body>
 <jsp:include page="../common/svg.jsp"/> <!-- svg -->
 <jsp:include page="../common/headbar.jsp"/> <!-- headbar -->
-
 <div class="container-fluid">
     <div class="row">
-        <div class="border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
+        <div class="border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary" style="height: 900px">
             <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
 
                 <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
@@ -88,19 +93,19 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/getListDrink.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectCoffeeList.jsp">
                                 <svg class="bi"><use xlink:href="#cup-hot"/></svg>
                                 음료 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/getListDessertIcecream.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectDessertList.jsp">
                             	<svg class="bi"><use xlink:href="#cake"/></svg>
                                 디저트&아이스크림 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/getListOrder.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/selectNotReceivedOrderList.jsp">
                                 <i class="bi bi-cart"></i>
                                 	주문 관리
                             </a>                                                        
@@ -170,19 +175,59 @@
         </main>
     </div>
 </div>
+<%
+    DashboardDAO dDAO = DashboardDAO.getInstance();
+
+    int[] drinkSales =  null;
+    int[] dessertSales = null;
+    int[] join = null;
+    int[] withdraw = null;
+    int[] voc = null;
+    int[] total = null;
+    try {
+        drinkSales = dDAO.selectDrinkSales();
+        dessertSales = dDAO.selectDessertSales();
+        join = dDAO.selectJoinCustomer();
+        withdraw =dDAO.selectWithdrawCustomer();
+        voc = dDAO.selectVoc();
+        total = dDAO.selectSales();
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    pageContext.setAttribute("selectDrinkSales", drinkSales);
+    pageContext.setAttribute("selectDessertSales", dessertSales);
+    pageContext.setAttribute("join",join);
+    pageContext.setAttribute("withdraw", withdraw);
+    pageContext.setAttribute("voc", voc);
+    pageContext.setAttribute("total", total);
+%>
 
 <script>
     // 날짜 sysdate -n 의 데이터를 가져온다.
     const days = ['월', '화', '수', '목', '금', '토', '일'];
-    // 실제 데이터 삽입 구간
-const data={
-        음료: [40, 30, 20, 27, 18, 23, 10],
-        디저트: [24, 13, 98, 39, 48, 38, 5],
-        가입: [100, 50, 30, 60, 70, 90, 10],
-        탈퇴: [20, 25, 30, 22, 28, 35, 5],
-        voc: [10, 20, 15, 0, 21, 31, 0],
-        매출: [50000, 10000, 550000, 560000, 190000, 140000, 50000]};
 
+    // 실제 데이터 삽입 구간
+    const data = {
+        음료: [${selectDrinkSales[6]}, ${selectDrinkSales[5]}, ${selectDrinkSales[4]},
+            ${selectDrinkSales[3]}, ${selectDrinkSales[2]}, ${selectDrinkSales[1]},
+            ${selectDrinkSales[0]}],
+        디저트: [${selectDessertSales[6]}, ${selectDessertSales[5]}, ${selectDessertSales[4]},
+            ${selectDessertSales[3]}, ${selectDessertSales[2]}, ${selectDessertSales[1]},
+            ${selectDessertSales[0]}],
+        가입: [${join[6]}, ${join[5]}, ${join[4]},
+            ${join[3]}, ${join[2]}, ${join[1]},
+            ${join[0]}],
+        탈퇴: [${withdraw[6]}, ${withdraw[5]}, ${withdraw[4]},
+            ${withdraw[3]}, ${withdraw[2]}, ${withdraw[1]},
+            ${withdraw[0]}],
+        voc: [${voc[6]}, ${voc[5]}, ${voc[4]},
+            ${voc[3]}, ${voc[2]}, ${voc[1]},
+            ${voc[0]}],
+        매출: [${total[6]}, ${total[5]}, ${total[4]},
+            ${total[3]}, ${total[2]}, ${total[1]},
+            ${total[0]}]
+    };
 
     // 차트 1: 음료 판매량
     new Chart(document.getElementById('chart1'), {

@@ -109,7 +109,7 @@
 <div class="login-container">
     <div class="logo">관</div>
     <h1>빽스다방 관리자 로그인</h1>
-    <form method="post" action="../manager/login_process.jsp" id="loginFrm" name="loginFrm" >
+    <form method="post" action="login_process.jsp" id="loginFrm" name="loginFrm" >
         <input type="text" placeholder="아이디" required id="managerId" name="managerId" value="test">
         <input type="password" placeholder="비밀번호" required id="managerPass" name="managerPass" value="test">
         <input type="button" value="로그인" class="submitBtn" id="submitBtn"/>

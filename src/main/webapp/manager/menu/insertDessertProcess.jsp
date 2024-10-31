@@ -1,8 +1,8 @@
+<%@page import="project.manager.menu.DessertIceDAO"%>
 <%@page import="java.sql.SQLException"%>
-<%@page import="project.manager.menu.DrinkDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
-    info="음료 추가 폼의 입력 정보 받기"
+    info="디저트 추가 폼의 입력 정보 받기"
     %>
 <%
 	//인코딩
@@ -12,28 +12,18 @@
 
 <jsp:useBean id="pVO" class="project.manager.menu.ProductVO" scope="page"/>
 <jsp:useBean id="iVO" class="project.manager.menu.IngredientVO" scope="page"/>
-<jsp:useBean id="oVO" class="project.manager.menu.DrinkOptionVO" scope="page"/>
 <jsp:setProperty property="*" name="pVO"/>
 <jsp:setProperty property="*" name="iVO"/>
-<jsp:setProperty property="*" name="oVO"/>
 <%-- <%= pVO %> --%>
 <%
 	boolean insertFlag = false;
 	String categorieName = "";
 	try {
-		DrinkDAO dDAO = DrinkDAO.getInstance();
-		dDAO.insertItem(pVO);			// item 테이블에 insert
-		dDAO.insertIngredient(iVO);		//ingredient 테이블에 insert
-		dDAO.insertDrinkOption(oVO);	//drink_option 테이블에 insert
+		DessertIceDAO diDAO = DessertIceDAO.getInstance();
+		diDAO.insertItem(pVO);			// item 테이블에 insert
+		diDAO.insertIngredient(iVO);		//ingredient 테이블에 insert
 		insertFlag = true;
-		if(pVO.getCategoriesNum() == 0){
-			pVO.setCategorieName("커피");
-			categorieName = pVO.getCategorieName();
-		} else if(pVO.getCategoriesNum() == 1){
-			pVO.setCategorieName("음료");
-			categorieName = pVO.getCategorieName();
-		}
-		//pVO.setCategorieName(categorieName);
+		pVO.setCategorieName("디저트");
 	} catch(SQLException se){
 		se.printStackTrace();
 	}
@@ -52,7 +42,7 @@
     <meta name="generator" content="Hugo 0.122.0">
     <link rel="stylesheet" href="http://localhost/jsp_prj/project/chart.umd/css/orderStateList.css">
     <link rel="stylesheet" href="http://localhost/jsp_prj/project/chart.umd/css/orderDetails.css">
-    <title>음료 추가</title>
+    <title>디저트 추가</title>
 	<link rel="stylesheet" type="text/css" href="http://192.168.10.212/jsp_prj/common/css/main_20240911.css">
     
 	<!-- bootstrap -->
@@ -68,12 +58,9 @@
     <meta name="theme-color" content="#712cf9"> 
 
 	<script type="text/javascript">
-	if(${ insertFlag } && ${ categorieName == "커피" } ){
-		alert("커피 메뉴 추가에 성공했습니다.");
-		location.href="selectCoffeeList.jsp"
-	} else if(${ insertFlag } && ${ categorieName == "음료" } ){
-		alert("음료 메뉴 추가에 성공했습니다.");
-		location.href="selectDrinkList.jsp"		
+	if(${ insertFlag }){
+		alert("디저트 메뉴 추가에 성공했습니다.");
+		location.href="selectDessertList.jsp"
 	} else {
 		alert("메뉴 추가에 문제가 발생했습니다. 잠시 후에 다시 시도해주세요.");
 		history.back();

@@ -3,6 +3,11 @@
     pageEncoding="UTF-8"
     info="음료를 추가하는 페이지"
     %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+	//인코딩
+	request.setCharacterEncoding("UTF-8");
+%>
 <%--관리자 세션을 검증하는 jsp include--%>
 <%-- <jsp:include page="../common/jsp/manager_session_chk.jsp"/> --%>
 
@@ -184,68 +189,129 @@
     </style>
 	<script type="text/javascript">
     $(function(){
-    	$("#chgSuccess").click(function(){
- 			Swal.fire({
-				icon: 'success',
-				title: '추가 완료',
-				text: '메뉴가 추가되었습니다.',
-			}); 
+    	$("#btnInsert").click(function(){
+			chkNull();
 		});//click
     });//ready
+    
+    function chkNull(){
+		// 이름 체크
+		if($("#nameKor").val().trim() == ""){
+			alert("이름은 필수 입력입니다!");
+			$("#nameKor").focus();
+			return;
+		}
+		
+		if($("#nameEng").val().trim() == ""){
+			alert("이름은 필수 입력입니다!");
+			$("#nameEng").focus();
+			return;
+		}
+		
+		// 가격 체크
+		if($("#price").val().trim() == ""){
+			alert("가격은 필수 입력입니다!");
+			$("#price").focus();
+			return;
+		}
+		
+		// 설명 체크
+		if($("#description").val().trim() == ""){
+			alert("설명은 필수 입력입니다!");
+			$("#description").focus();
+			return;
+		}
+		
+		// 이미지 첨부 체크
+		if(!$("#image").val()){
+			alert("이미지 첨부는 필수입니다!");
+			return;
+		}
+		
+		// 카테고리 설정 체크
+		if(!$('input:radio[name="categoriesNum"]').is(':checked')){
+			alert("카테고리 설정은 필수입니다!");
+			return;
+		}
+		
+		// 기옵 옵션 설정 체크
+		// 샷 설정
+		if($("#shot").val() == ""){
+			alert("기본 샷 설정은 필수입니다!");
+			return;
+		}
+		
+		// 시럽 설정
+		if($("#syrup").val() == ""){
+			alert("기본 시럽 설정은 필수입니다!");
+			return;
+		}
+		
+		// 영양 성분표 제공 여부
+		if(!$('input:radio[name="ingredientFlag"]').is(':checked')){
+			alert("영양 성분표 제공 여부 설정은 필수입니다!");
+			return;
+		}
+		
+		// 영양 성분표 제공시
+		if(('input:radio[name="ingredientFlag"]:checked').val == "Y"){
+			// 카페인
+			if($("#caffeine").val() == ""){
+				alert("카페인 성분량을 입력해 주세요!");
+				$("#caffeine").focus();
+				return;
+			}
+			
+			// 칼로리
+			if($("#calorie").val() == ""){
+				alert("칼로리를 입력해주세요!");
+				$("#calorie").focus();
+				return;
+			}
+			// 나트륨
+			if($("#natrium").val() == ""){
+				alert("나트륨 성분량을 입력해주세요!");
+				$("#natrium").focus();
+				return;
+			}
+			// 당류
+			if($("#sugar").val() == ""){
+				alert("당류 성분량을 입력해주세요!");
+				$("#sugar").focus();
+				return;
+			}
+			// 포화지방
+			if($("#fattyAcid").val() == ""){
+				alert("포화지방 성분량을 입력해주세요!");
+				$("#fattyAcid").focus();
+				return;
+			}
+			// 단백질
+			if($("#protein").val() == ""){
+				alert("성분을 입력해주세요!");
+				$("#protein").focus();
+				return;
+			}
+			
+		}
+		
+		$("#insertFrm").submit();
+    }
+    
+ 	// 이미지 미리보기 기능
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function(){
+            const imagePreview = document.getElementById('image-preview');
+            imagePreview.src = reader.result;
+            imagePreview.style.display = 'block';
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
     </script>
     
 	<script type="text/javascript">
-	        // 이미지 미리보기 기능
-	        function previewImage(event) {
-	            const reader = new FileReader();
-	            reader.onload = function(){
-	                const imagePreview = document.getElementById('image-preview');
-	                imagePreview.src = reader.result;
-	                imagePreview.style.display = 'block';
-	            }
-	            reader.readAsDataURL(event.target.files[0]);
-	        }
-		
-	        // 옵션 추가 기능
-	        function addOption() {
-	            const optionName = document.getElementById('new-option-name').value;
-	            if (optionName) {
-	                const optionsContainer = document.getElementById('options-container');
-	                const newOptionDiv = document.createElement('div');
-	                newOptionDiv.classList.add('option');
-	                
-	                const label = document.createElement('label');
-	                label.textContent = optionName;
-	                
-	                const checkbox = document.createElement('input');
-	                checkbox.type = 'checkbox';
-	                
-	                newOptionDiv.appendChild(label);
-	                newOptionDiv.appendChild(checkbox);
-	                optionsContainer.appendChild(newOptionDiv);
-		
-	                document.getElementById('new-option-name').value = ''; // 입력 필드 초기화
-	            }
-	        }
-		
-	        // 선택된 체크박스 옵션 삭제 기능
-	        function removeCheckedOptions() {
-	            const optionsContainer = document.getElementById('options-container');
-	            const options = optionsContainer.querySelectorAll('.option');
-	            
-	            options.forEach(option => {
-	                const checkbox = option.querySelector('input[type="checkbox"]');
-	                if (checkbox.checked) {
-	                    optionsContainer.removeChild(option);
-	                }
-	            });
-	        }
 	        
-	      	//성분표 라디오 선택 여부 성분표 보여주기 기능
-	        function toggleTable(show) {
-	            const table = document.getElementById('nutrition-table');
-	            table.style.display = show ? 'table' : 'none';
-	        }
 	</script>
 
 </head>
@@ -317,44 +383,45 @@
             </div>
 		<div class="plus-container" style="height: 1400px;">
 		
-		        <form>
+		<form action="insertDrinkProcess.jsp" name="insertFrm" id="insertFrm" method="post" accept-charset="UTF-8">
 		            <!-- 음료 이름 -->
 		            <label for="drink-name">이름</label>
-		            <input type="text" id="drink-name-k" name="iNameK" placeholder="음료 이름을 입력하세요">
+		            <input type="text" id="nameKor" name="iNameK" placeholder="음료 이름을 입력하세요" value="아메리카노">
 		            <label for="drink-name">영어 이름</label>
-		            <input type="text" id="drink-name-e" name="iNameE" placeholder="음료 영어 이름을 입력하세요">
+		            <input type="text" id="nameEng" name="iNameE" placeholder="음료 영어 이름을 입력하세요" value="Americano">
 		
 		            <!-- 가격 -->
 		            <label for="drink-price">가격</label>
-		            <input type="text" id="drink-price" name="price" placeholder="가격을 입력하세요">
+		            <input type="text" id="price" name="price" placeholder="가격을 입력하세요" value="1600">
 		
 		            <!-- 설명 -->
 		            <label for="drink-description">설명</label>
-		            <textarea id="drink-description" name="description" rows="4" placeholder="음료 설명을 입력하세요"></textarea>
+		            <textarea id="description" name="description" rows="4" placeholder="음료 설명을 입력하세요">아메아메아메 아메리카노 좋아좋아좋아</textarea>
 		
 		            <!-- 이미지 추가 -->
 		            <label for="drink-image">이미지</label>
 		            <div class="image-upload">
-		                <img id="image-preview" src="#" alt="이미지 미리보기" style="display: none;" title="새 파일">
-		                <input type="file" id="drink-image" name="image" accept="image/*" onchange="previewImage(event)">
+		                <img id="preview" src="#" alt="이미지 미리보기" style="display: none;" title="새 파일">
+		                <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
 		            </div>
 		
 		            <!-- 카테고리 구분 -->
 		            <fieldset>
 		                <legend>카테고리</legend>
-		                <label>커피<input type="radio" name="categorieNum" value="0"></label>
-		                <label>음료<input type="radio" name="categorieNum" value="1"></label>
+		                <label>커피<input type="radio" name="categoriesNum" value="0" checked="checked"></label>
+		                <label>음료<input type="radio" name="categoriesNum" value="1"></label>
 		            </fieldset>
 		
 		            <!-- 구매시 기본 옵션 -->
+		            <!-- 옵션 테이블 추가 항목 -->
 		            <fieldset>
 		            <legend>기본 옵션 설정:</legend>
 		            <div id="options-container">
 		                <div class="option">
 		                    <label for="extra-shot">샷 추가</label>
-		                    <select size="1" id="extraShot" name="show" class="inputBox">
+		                    <select size="1" id="shot" name="shot" class="inputBox">
 		                    	<option value="">--선택--</option>
-		                    	<option value="0">0</option>
+		                    	<option value="0" selected="selected">0</option>
 		                    	<option value="1">1</option>
 		                    	<option value="2">2</option>
 		                    	<option value="3">3</option>
@@ -372,13 +439,13 @@
 		                    <input type="radio" name="sizeS" value="Y" style="margin-right: 5px;"> 예
 		                    </div>
 		                    <div class="option">
-		                    <input type="radio" name="sizeS" value="N" style="margin-right: 5px;"> 아니오
+		                    <input type="radio" name="sizeS" value="N" style="margin-right: 5px;" checked="checked"> 아니오
 		                    </div>
 		                </div>
 		                <div class="option">
 		                    <label for="size-option">사이즈 선택(M)</label>
 		                    <div class="option">
-		                    <input type="radio" name="sizeM" value="Y" style="margin-right: 5px;"> 예
+		                    <input type="radio" name="sizeM" value="Y" style="margin-right: 5px;" checked="checked"> 예
 		                    </div>
 		                    <div class="option">
 		                    <input type="radio" name="sizeM" value="N" style="margin-right: 5px;"> 아니오
@@ -390,14 +457,14 @@
 		                    <input type="radio" name="sizeL" value="Y" style="margin-right: 5px;"> 예
 		                    </div>
 		                    <div class="option">
-		                    <input type="radio" name="sizeL" value="N" style="margin-right: 5px;"> 아니오
+		                    <input type="radio" name="sizeL" value="N" style="margin-right: 5px;" checked="checked"> 아니오
 		                    </div>
 		                </div>
 		                <div class="option">
 		                    <label for="syrup-option">시럽 추가</label>
-		                	<select size="1" id="addSyrup" name="syrup" class="inputBox">
+		                	<select size="1" id="syrup" name="syrup" class="inputBox">
 		                    	<option value="">--선택--</option>
-		                    	<option value="0">0</option>
+		                    	<option value="0" selected="selected">0</option>
 		                    	<option value="1">1</option>
 		                    	<option value="2">2</option>
 		                    	<option value="3">3</option>
@@ -415,17 +482,18 @@
 		                   	<input type="radio" name="multiCup" value="Y" style="margin-right: 5px;">사용
 		                   	</div>
 		                   	<div class="option">
-		                    <input type="radio" name="multiCup" value="N" style="margin-right: 5px;">사용하지 않음
+		                    <input type="radio" name="multiCup" value="N" style="margin-right: 5px;" checked="checked">사용하지 않음
 		                    </div>
 		                </div>
 		            </div>
 		            </fieldset>
+		            <!-- 옵션 테이블 추가 항목 -->
 		
-		            <!-- 영양 성분표 제공 여부 -->
+		    <!-- 영양 성분표 제공 여부 -->
 		    <fieldset>
 		    <legend>영양 성분표 제공 여부:</legend>
-		    <label><input type="radio" name="ingredientFlag" value="Y" onclick="toggleTable(true)"> 제공</label>
-		    <label><input type="radio" name="ingredientFlag" value="N" onclick="toggleTable(false)"> 미제공</label>
+		    <label><input type="radio" name="ingredientFlag" value="Y" checked="checked"> 제공</label>
+		    <label><input type="radio" name="ingredientFlag" value="N"> 미제공</label>
 		
 		    <table id="ingredientTable">
 		        <tr>
@@ -434,40 +502,42 @@
 		        </tr>
 		        <tr>
 		            <td>카페인</td>
-		            <td><input type="text" name="caffeine" value="59"></td>
+		            <td><input type="text" id="caffeine" name="caffeine" value="237"></td>
 		        </tr>
 		        <tr>
 		            <td>칼로리</td>
-		            <td><input type="text" name="calorie" value="2"></td>
+		            <td><input type="text" id="calorie" name="calorie" value="40"></td>
 		        </tr>
 		        <tr>
 		            <td>나트륨</td>
-		            <td><input type="text" name="natrium" value="0"></td>
+		            <td><input type="text" id="natrium" name="natrium" value="4"></td>
 		        </tr>
 		        <tr>
 		            <td>당류</td>
-		            <td><input type="text" name="sugar" value="0"></td>
+		            <td><input type="text" id="sugar" name="sugar" value="0"></td>
 		        </tr>
 		        <tr>
 		            <td>포화지방</td>
-		            <td><input type="text" name="fattyAcid" value="0"></td>
+		            <td><input type="text" id="fattyAcid" name="fattyAcid" value="0"></td>
 		        </tr>
 		        <tr>
 		            <td>단백질</td>
-		            <td><input type="text" name="protein" value="0.3"></td>
+		            <td><input type="text" id="protein" name="protein" value="0"></td>
 		        </tr>
 		    </table>
 		</fieldset>
 		        <!-- 제출 버튼 -->
-        <button type="button" class="btn btn-primary" id="chgSuccess">추가 음료 저장</button>
-	<div>
-	</div>
-    </form>
-</div>
+        <button type="button" class="btn btn-primary" id="btnInsert">추가 음료 저장</button>
+		<div>
+		</div>
+    	</form>
+		<canvas class="my-4 w-100" id="myChart" width="900" height="100"></canvas>
+		</div>
         </main>
     </div>
 </div>
 <script src="bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 <script src="chart.umd.js" integrity="sha384-eI7PSr3L1XLISH8JdDII5YN/njoSsxfbrkCTnJrzXt+ENP5MOVBxD+l6sEG4zoLp" crossorigin="anonymous"></script><script src="dashboard.js"></script></body>
+</body>
 </html>

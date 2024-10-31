@@ -1,4 +1,4 @@
-<%@ page import="first_prj.jsp_prj2.dao.ManagerDAO" %>
+<%@ page import="project.manager.manager.ManagerDAO" %>
 <%@ page import="java.sql.SQLException" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" info="매니저 아이디 정보를 조회" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -6,7 +6,7 @@
 <html lang="ko">
 <%--useBean으로 폼으로 전달된 정보 저장, 추후 클래스 변경--%>
 <jsp:include page="common/jsp/post_chk.jsp"/>
-<jsp:useBean id="managerVO" class="first_prj.jsp_prj2.VO.ManagerVO" scope="page"/>
+<jsp:useBean id="managerVO" class="project.manager.manager.ManagerVO" scope="page"/>
 <jsp:setProperty name="managerVO" property="*"/>
 <head>
     <meta charset="UTF-8">
@@ -38,7 +38,7 @@
         if("".equals(managerId) || managerId.isEmpty()){%>
         <script>
             alert("로그인 실패! 다시 시도해주세요.");
-            location.href = "http://localhost/jsp_prj/manager/index.jsp";
+            location.href = "http://localhost/jsp_prj/manager_v1.2/index.jsp";
         </script>
     <%
         }

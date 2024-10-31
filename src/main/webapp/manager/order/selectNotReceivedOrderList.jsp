@@ -1,9 +1,15 @@
+<%@page import="project.manager.util.OrderUtil"%>
+<%@page import="project.manager.order.OrderVO"%>
+<%@page import="java.util.List"%>
+<%@page import="java.sql.SQLException"%>
+<%@page import="project.manager.order.OrderDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     info="주문 관리 페이지"
     %>
 <%--관리자 세션을 검증하는 jsp include--%>
-<jsp:include page="../common/jsp/manager_session_chk.jsp"/>
+<%-- <jsp:include page="../common/jsp/manager_session_chk.jsp"/> --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
@@ -15,7 +21,7 @@
     <meta name="generator" content="Hugo 0.122.0">
     <link rel="stylesheet" href="http://localhost/jsp_prj/manager/common/css/orderStateList.css">
     <link rel="stylesheet" href="http://localhost/jsp_prj/manager/common/css/orderDetails.css">
-    <title>주문 상태 확인</title>
+    <title>미수령 주문 상태 확인</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/dashboard/">
     <link rel="stylesheet" href="http://localhost/jsp_prj/manager/common/css/project_main.css">
     <!-- Custom styles for this template -->
@@ -96,6 +102,7 @@
         .confirm-delete { background-color: #FF0000; color: white; border: none; }
         .cancel-delete { background-color: #f2f2f2; color: black; border: 1px solid #ddd; }
         #drinkImg { width: 40px; height: 50px;}
+        a { text-decoration: none; }
     </style>
 
     <script type="text/javascript">
@@ -112,13 +119,29 @@
 			$(".orderCode").click(function(){
 				openPopup();
 			});//click
+			
+			$("#change").click(function(){
+				changeReceive();
+			})
 	    });//ready
 	    
-	    function showTab(tab) {
-	        document.getElementById('received').classList.add('hidden');
-	        document.getElementById('not-received').classList.add('hidden');
-	        document.getElementById(tab).classList.remove('hidden');
-	    }
+	    function changeReceive(String itemNum){
+	    	var cartItemNum = $("#cartItemNum").
+	    	
+	    	var param = { receiptFlag : receiptFlag };
+	    	$.ajax({
+	    		url:"changeProcess.jsp",
+	    		type:"get",
+	    		data:param,
+	    		dataType:"json"
+	    		error:function(xhr){
+	    			console.log(xhr.status);
+	    		},
+	    		success:function(jsonObj){
+	    			alert(jsonObj);
+	    		}
+	    	});/
+	    }//changeReceive
 	
 	    // 테이블 정렬 함수
 	    let sortDirection = true; // true는 오름차순, false는 내림차순
@@ -222,25 +245,89 @@
             </div>
         </div>
         
+        <jsp:useBean id="sVO" class="project.manager.order.SearchVO" scope="page"/>
+        <jsp:setProperty property="*" name="sVO"/>
+        <%
+        //게시판 리스트 구현
+        //1-1. 총 커피 레코드 수 구하기
+        
+        int totalCount = 0;
+        OrderDAO oDAO = OrderDAO.getInstance();
+        try{
+        	totalCount = oDAO.selectTotalCountNotReceived(sVO);
+        	//System.out.println(totalCount);
+        } catch(SQLException se){
+        	se.printStackTrace();
+        }
+        //2-1. 한 화면에 보여줄 커피 레코드의 수
+        int pageScale = 10;
+        
+        //3-1. 총 커피 페이지 수
+        int totalPage = (int)Math.ceil((double)totalCount/pageScale);
+        
+        //4-1 커피 검색의 시작 번호를 구하기(pagination의 번호)
+        String paramPage = request.getParameter("currentPage");
+        
+        int currentPage = 1;
+        if(paramPage != null){
+        	try{
+        		currentPage = Integer.parseInt(paramPage);
+        	} catch(NumberFormatException nfe) {
+        		nfe.printStackTrace();
+        	}// end catch
+        }//end if
+        
+        int startNum = currentPage * pageScale - pageScale + 1; // 커피 시작 번호
+        
+        // 5-1. 끝 번호 구하기
+        int endNum = startNum + pageScale - 1; // 커피 끝 번호
+        
+        sVO.setCurrentPage(currentPage);
+        sVO.setStartNum(startNum);
+        sVO.setEndNum(endNum);
+        sVO.setTotalPage(totalPage);
+        sVO.setTotalCount(totalCount);
+        
+        //out.print(sVO);
+               
+        //System.out.println(csVO.getStartNum() + ", " + csVO.getEndNum());
+        
+        List<OrderVO> listBoard = null;
+        try{
+        	listBoard = oDAO.selectNotReceivedList(sVO);//시작 번호, 끝 번호를 사용한 게시글 조회
+        	
+/*         	String tempName="";
+        	for(ProductVO tempVO : listBoard){
+        		tempName = tempVO.getiNameK();
+        		if(tempName.length() > 30){
+        			tempVO.setiNameK(tempName.substring(0,29) + "...");
+        		}// end if
+        	}// end for */
+        } catch(SQLException se){
+        	se.printStackTrace();
+        }//end catch
+        
+   	 	pageContext.setAttribute("totalCount", totalCount);
+    	pageContext.setAttribute("pageScale", pageScale); 
+    	pageContext.setAttribute("totalPage", totalPage);
+     	pageContext.setAttribute("currentPage", currentPage);
+    	pageContext.setAttribute("startNum", startNum);
+    	pageContext.setAttribute("endNum", endNum);	 
+    	pageContext.setAttribute("listBoard", listBoard);	
+        
+        %>
+        
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 	    <h1 class="h2"><strong>주문 상태 리스트</strong></h1>
 	</div>
-
-    <!-- 탭 메뉴 -->
-<!--     <div class="tab-container">
-        <div class="tab" onclick="showTab('received')">수령 완료</div>
-        <div class="tab" onclick="showTab('not-received')">미수령</div>
-    </div> -->
     
-    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" style="margin-bottom: 10px;">
-		<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-			  <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-			  <label class="btn btn-outline-primary" for="btnradio1" class="btnradio1">미수령</label>
-			
-			  <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-			  <label class="btn btn-outline-primary" for="btnradio2" class="btnradio2">수령</label>
-		</div>
+	<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="margin-bottom: 30px;">
+	  <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+	  <label class="btn btn-outline-primary" for="btnradio1"><a href="selectNotReceivedOrderList.jsp" style="color:#FFF; font-weight: bold;">미수령 주문</a></label>
+	
+	  <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+	  <label class="btn btn-outline-primary" for="btnradio2"><a href="selectReceivedOrderList.jsp" style="color:#0d6efd;">수령한 주문</a></label>
 	</div>
 	
     <form>
@@ -254,131 +341,44 @@
                 <th class="sortable" onclick="sortTable(3, 'not-received')">주문 시간 @</th>
                 <th>주문 수량</th>
                 <th>주문 상태</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>ON_004</td>
-                <td>아이스 아메리카노</td>
-                <td>한잔만</td>
-                <td>2024-10-11</td>
-                <td>4 잔</td>
-                <td><span class="status pending">미수령</span></td>
-            </tr>
-            <tr>
-                <td>ON_005</td>
-                <td>녹차</td>
-                <td>한잔만</td>
-                <td>2024-10-12</td>
-                <td>4 잔</td>
-                <td><span class="status pending">미수령</span></td>
-            </tr>
-            <tr>
-                <td>ON_006</td>
-                <td>식혜</td>
-                <td>한잔만</td>
-                <td>2024-10-13</td>
-                <td>4 잔</td>
-                <td><span class="status pending">미수령</span></td>
-            </tr>
+        <c:if test="${ empty listBoard }">
+        <tr>
+        	<td style="text-align: center" colspan="6">
+        	현재 미수령한 주문이 없습니다.<br>
+        	</td>
+        </tr>
+        </c:if>
+        <c:forEach var="oVO" items="${ listBoard }" varStatus="i">
+        <tr>
+        	<!-- var.VO의 변수명 -->
+        	<!-- 번호, 상품 이름, 주문자, 주문 시간, 주문 수량, 주문 상태 -->
+        	<td>ON_<c:out value="${ oVO.cartItemNum }"/></td>
+        	<td><a href="selectDetailCoffee.jsp?cartItemNum=${ oVO.cartItemNum }&currentPage=${ currentPage }">
+        	<c:out value="${ oVO.iNameK }"/></a></td>
+        	<td><c:out value="${ oVO.name }"/></td>
+        	<td><c:out value="${ oVO.inputDate }"/></td>
+        	<td><c:out value="${ oVO.quantity }"/></td>
+        	<td>
+        	<c:if test="${ oVO.receiptFlag eq 'N' }">
+        	<span class="status pending">미수령</span>
+        	</c:if>
+        	</td>
+        </tr>
+        </c:forEach>
         </tbody>
     </table>
-    
-    <!-- 수령 완료 주문 -->
-    <table id="received" class="hidden">
-        <thead>
-            <tr>
-                <th class="sortable" onclick="sortTable(0, 'received')">번호 @</th>
-                <th>상품 이름</th>
-                <th>주문자</th>
-                <th class="sortable" onclick="sortTable(3, 'received')">주문 시간 @</th>
-                <th>주문 수량</th>
-                <th>주문 상태</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>ON_001</td>
-                <td>아이스 아메리카노</td>
-                <td>한잔만</td>
-                <td>2024-10-11</td>
-                <td>4 잔</td>
-               <td><span class="status completed">수령 완료</span></td>
-            </tr>
-            <tr>
-                <td>ON_002</td>
-                <td>아이스 아이스크림</td>
-                <td>한잔만</td>
-                <td>2024-10-12</td>
-                <td>4 잔</td>
-               <td><span class="status completed">수령 완료</span></td>
-            </tr>
-            <tr>
-                <td>ON_003</td>
-                <td>구아바 크림 주스</td>
-                <td>한잔만</td>
-                <td>2024-10-13</td>
-                <td>4 잔</td>
-               <td><span class="status completed">수령 완료</span></td>
-            </tr>
-            <tr>
-                <td>ON_004</td>
-                <td>구아바 크림 주스</td>
-                <td>한잔만</td>
-                <td>2024-10-13</td>
-                <td>4 잔</td>
-                <td><span class="status completed">수령 완료</span></td>
-            </tr>
-            <tr>
-                <td>ON_005</td>
-                <td>구아바 크림 주스</td>
-                <td>한잔만</td>
-                <td>2024-10-12</td>
-                <td>4 잔</td>
-                <td><span class="status completed">수령 완료</span></td>
-            </tr>
-            <tr>
-                <td>ON_006</td>
-                <td>구아바 크림 주스</td>
-                <td>한잔만</td>
-                <td>2024-10-11</td>
-                <td>4 잔</td>
-                <td><span class="status completed">수령 완료</span></td>
-            </tr>
-        </tbody>
-        
-    </table>
+   	<!-- pagination -->
+	<ul class="pagination justify-content-center">
+	<% sVO.setUrl("selectNotReceivedOrderList.jsp"); %>
+	<%= new OrderUtil().pagination(sVO) %>
+	</ul>
+	<!-- pagination end -->
     </form>
-
-					<ul class="pagination justify-content-center">
-                		<li class="page-item">
-						<a class="page-link" href="#">
-						<i class="bi bi-chevron-double-left" title="최신 글 보기"></i></a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">
-						<i class="bi bi-chevron-left"></i></a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">1</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">2</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">3</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">
-						<i class="bi bi-chevron-right"></i></a>
-						</li>
-                		<li class="page-item">
-						<a class="page-link" href="#">
-						<i class="bi bi-chevron-double-right" title="마지막 글 보기"></i></a>
-						</li>
-					</ul>
-    <!-- <button onclick="openPopup()">주문 상세 보기</button> -->
-			<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+			<canvas class="my-4 w-100" id="myChart" width="900" height="650"></canvas>
         </main>
     </div>
 </div>

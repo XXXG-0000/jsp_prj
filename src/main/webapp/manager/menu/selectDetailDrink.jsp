@@ -1,9 +1,46 @@
+<%@page import="project.manager.menu.IngredientVO"%>
+<%@page import="project.manager.menu.DrinkOptionVO"%>
+<%@page import="java.sql.SQLException"%>
+<%@page import="project.manager.menu.ProductVO"%>
+<%@page import="project.manager.menu.SearchVO"%>
+<%@page import="project.manager.menu.DrinkDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
-    info="음료 정보 수정"
+    info="음료 정보 읽기"
     %>
 <%--관리자 세션을 검증하는 jsp include--%>
-<jsp:include page="../common/jsp/manager_session_chk.jsp"/>
+<%-- <jsp:include page="../common/jsp/manager_session_chk.jsp"/> --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+// 실제 커피 메뉴의 상품 번호를 받는다.
+	String tempNum = request.getParameter("itemNum");
+	int itemNum = 0;
+	try {
+		itemNum = Integer.parseInt(tempNum);
+	} catch(NumberFormatException nfe) {
+		response.sendRedirect("selectDrinkList.jsp"); // 음료 목록으로 반환
+		return;
+	}// end catch
+	
+	// 입력된 아이템 번호로 상세 조회 수행
+	DrinkDAO dDAO = DrinkDAO.getInstance();
+	
+	ProductVO pVO = null;
+	DrinkOptionVO oVO = null;
+	IngredientVO iVO = null;
+	
+	try{
+		pVO = dDAO.selectDetailItemBoard(itemNum);
+		oVO = dDAO.selectDetailOptionBoard(itemNum);
+		iVO = dDAO.selectDetailIngredientBoard(itemNum);
+	} catch(SQLException se){
+		se.printStackTrace();
+	}// end catch
+	
+	pageContext.setAttribute("pVO", pVO);
+	pageContext.setAttribute("oVO", oVO);
+	pageContext.setAttribute("iVO", iVO);
+%>
 
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -179,97 +216,153 @@
 	<script type="text/javascript">
     $(function(){
      	$("#confirm").click(function(){
-			window.close();
+			//var url="http://localhost/jsp_prj/manager/menu/selectDrinkList.jsp?currentPage=${ param.currentPage }"
+			var url="http://localhost/jsp_prj/manager_v1.1/menu/selectDrinkList.jsp?currentPage=${ param.currentPage }"
+					
+			location.href = url;
      	});//click
      	
     	$("#answer").click(function(){
- 			Swal.fire({
-				icon: 'success',
-				title: '수정 완료',
-				text: '메뉴가 수정되었습니다.',
-			}); 
+ 			movePage('u');
 		});//click
      	
     	$("#cancel").click(function(){
-            Swal.fire({
-                title: '현재 메뉴를 삭제하시겠습니까?',
-                text: "다시 되돌릴 수 없습니다. 신중하세요.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '삭제',
-                cancelButtonText: '취소'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire(
-                       '삭제 완료 !',
-                       '메뉴가 삭제 되었습니다 !'
-                    )//fire
-                }// end if
-            })//fire
-		});//click
+			movePage('d');
+    	});//click
     });//ready
+
+    function movePage(flag){
+		var action="updateCoffeeDrink.jsp";
+		var msg="메뉴를 수정하시겠습니까?";
+		
+		if(flag == 'd'){
+			action = "deleteDrink.jsp";
+			msg = "정말 메뉴를 삭제하시겠습니까?"
+		}// end if
+		
+		// 사용자에게 확인을 거친다
+		if(confirm(msg)){
+			//폼태그 객체의 action 속성 변경
+			document.readFrm.action = action;
+			
+			$("#readFrm").submit();//form 전송
+		}// end if
+    }//movePage
     
-    var myModalEl = document.getElementById('modify-confirm')
-    myModalEl.addEventListener('hidden.bs.modal', function (event) {
-  	// do something...
-  	
-	});
+    function chkNull(){
+		// 이름 체크
+		if($("#nameKor").val().trim() == ""){
+			alert("이름은 필수 입력입니다!");
+			$("#nameKor").focus();
+			return;
+		}
+		
+		if($("#nameEng").val().trim() == ""){
+			alert("이름은 필수 입력입니다!");
+			$("#nameEng").focus();
+			return;
+		}//end if
+		
+		// 가격 체크
+		if($("#price").val().trim() == ""){
+			alert("가격은 필수 입력입니다!");
+			$("#price").focus();
+			return;
+		}//end if
+		
+		// 설명 체크
+		if($("#description").val().trim() == ""){
+			alert("설명은 필수 입력입니다!");
+			$("#description").focus();
+			return;
+		}//end if
+		
+		// 이미지 첨부 체크
+/* 		if(!$("#image").val()){
+			alert("이미지 첨부는 필수입니다!");
+			return;
+		}//end if */
+		
+		// 카테고리 설정 체크
+		if(!$('input:radio[name="categoriesNum"]').is(':checked')){
+			alert("카테고리 설정은 필수입니다!");
+			return;
+		}//end if
+		
+		// 기옵 옵션 설정 체크
+		// 샷 설정
+		if($("#shot").val() == ""){
+			alert("기본 샷 설정은 필수입니다!");
+			return;
+		}//end if
+		
+		// 시럽 설정
+		if($("#syrup").val() == ""){
+			alert("기본 시럽 설정은 필수입니다!");
+			return;
+		}//end if
+		
+		// 영양 성분표 제공 여부
+		if(!$('input:radio[name="ingredientFlag"]').is(':checked')){
+			alert("영양 성분표 제공 여부 설정은 필수입니다!");
+			return;
+		}//end if
+		
+		// 영양 성분표 제공시
+		if(('input:radio[name="ingredientFlag"]:checked').val == "Y"){
+			// 카페인
+			if($("#caffeine").val() == ""){
+				alert("카페인 성분량을 입력해 주세요!");
+				$("#caffeine").focus();
+				return;
+			}//end if
+			// 칼로리
+			if($("#calorie").val() == ""){
+				alert("칼로리를 입력해주세요!");
+				$("#calorie").focus();
+				return;
+			}//end if
+			// 나트륨
+			if($("#natrium").val() == ""){
+				alert("나트륨 성분량을 입력해주세요!");
+				$("#natrium").focus();
+				return;
+			}//end if
+			// 당류
+			if($("#sugar").val() == ""){
+				alert("당류 성분량을 입력해주세요!");
+				$("#sugar").focus();
+				return;
+			}//end if
+			// 포화지방
+			if($("#fattyAcid").val() == ""){
+				alert("포화지방 성분량을 입력해주세요!");
+				$("#fattyAcid").focus();
+				return;
+			}//end if
+			// 단백질
+			if($("#protein").val() == ""){
+				alert("성분을 입력해주세요!");
+				$("#protein").focus();
+				return;
+			}//end if
+			
+		}//end if
+	
+    }//chkNull
+    
+    // 이미지 미리보기 기능
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function(){
+            const imagePreview = document.getElementById('image-preview');
+            imagePreview.src = reader.result;
+            imagePreview.style.display = 'block';
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
     </script>
-    <script>
-	        // 이미지 미리보기 기능
-	        function previewImage(event) {
-	            const reader = new FileReader();
-	            reader.onload = function(){
-	                const imagePreview = document.getElementById('image-preview');
-	                imagePreview.src = reader.result;
-	                imagePreview.style.display = 'block';
-	            }
-	            reader.readAsDataURL(event.target.files[0]);
-	        }
-	
-	        // 옵션 추가 기능
-	        function addOption() {
-	            const optionName = document.getElementById('new-option-name').value;
-	            if (optionName) {
-	                const optionsContainer = document.getElementById('options-container');
-	                const newOptionDiv = document.createElement('div');
-	                newOptionDiv.classList.add('option');
-	                
-	                const label = document.createElement('label');
-	                label.textContent = optionName;
-	                
-	                const checkbox = document.createElement('input');
-	                checkbox.type = 'checkbox';
-	                
-	                newOptionDiv.appendChild(label);
-	                newOptionDiv.appendChild(checkbox);
-	                optionsContainer.appendChild(newOptionDiv);
-	
-	                document.getElementById('new-option-name').value = ''; // 입력 필드 초기화
-	            }
-	        }
-	
-	        // 선택된 체크박스 옵션 삭제 기능
-	        function removeCheckedOptions() {
-	            const optionsContainer = document.getElementById('options-container');
-	            const options = optionsContainer.querySelectorAll('.option');
-	            
-	            options.forEach(option => {
-	                const checkbox = option.querySelector('input[type="checkbox"]');
-	                if (checkbox.checked) {
-	                    optionsContainer.removeChild(option);
-	                }
-	            });
-	        }
-	        
-	        //성분표 라디오 선택 여부 성분표 보여주기 기능
-	        function toggleTable(show) {
-	            const table = document.getElementById('nutrition-table');
-	            table.style.display = show ? 'table' : 'none';
-	        }
-	    </script>
+
 
 </head>
 <body>
@@ -341,34 +434,37 @@
 
 		<div class="form-container">
 
-        <form>
+        <form action="selectDrinkList.jsp" name="readFrm" id="readFrm" method="post">
             <!-- 음료 이름 -->
             <label for="drink-name">이름</label>
-            <input type="text" id="drink-name-k" name="iNameK" placeholder="음료 이름을 입력하세요" value="아메리카노(HOT)">
+            <input type="text" id="nameKor" name="iNameK" value="${ pVO.iNameK }">
             <label for="drink-name">영어 이름</label>
-            <input type="text" id="drink-name-e" name="iNameE" placeholder="음료 이름을 입력하세요" value="Americano(HOT)">
+            <input type="text" id="nameEng" name="iNameE" value="${ pVO.iNameE }">
+            <input type="hidden" id="itemNum" name="itemNum" value="${ pVO.itemNum }">
+            <input type="hidden" id="currentPage" name="currentPage" value="${ param.currentPage }">
 
             <!-- 가격 -->
             <label for="drink-price">가격</label>
-            <input type="text" id="drink-price" name="price" placeholder="가격을 입력하세요" value="1,500">
+            <input type="text" id="price" name="price" value="${ pVO.price }">
 
             <!-- 설명 -->
             <label for="drink-description">설명</label>
-            <textarea id="drink-description" name="description" rows="4" placeholder="음료 설명을 입력하세요">빽다방만의 맛과 향을 더한 100% 아라비카 로스팅 원두로 뽑아내 깊고 진한 맛의 앗!메리카노
+            <textarea id="description" name="description" rows="4"> 
+            ${ pVO.description }
             </textarea>
 
             <!-- 이미지 추가 -->
             <label for="drink-image">이미지</label>
             <div class="image-upload">
-                <img id="image-preview" src="http://localhost/jsp_prj/manager/common/image/HOT-%EC%95%97%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8-450x588.png" alt="이미지 미리보기" style="">
-                <input type="file" id="drink-image" name="image" accept="image/*" onchange="previewImage(event)">
+                <img id="preview" src="http://localhost/jsp_prj/manager/common/image/${ pVO.image }" alt="이미지 미리보기" style="">
+                <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
             </div>
 
 			<!-- 카테고리 구분 -->
 			<fieldset>
 			    <legend>카테고리</legend>
-			    <label>커피<input type="radio" name="categorieNum" value="0"></label>
-			    <label>음료<input type="radio" name="categorieNum" value="1"></label>
+			    <label>커피<input type="radio" name="categoriesNum" value="0" <c:if test="${ pVO.categoriesNum eq 0 }">checked="checked"</c:if> /></label>
+			    <label>음료<input type="radio" name="categoriesNum" value="1" <c:if test="${ pVO.categoriesNum eq 1 }">checked="checked"</c:if> /></label>
 			</fieldset>
 			
 			<!-- 구매시 기본 옵션 -->
@@ -377,70 +473,70 @@
 		    <div id="options-container">
 		        <div class="option">
 		            <label for="extra-shot">샷 추가</label>
-		            <select size="1" id="extraShot" name="show" class="inputBox">
+		            <select size="1" id="shot" name="shot" class="inputBox">
 		               	<option value="">--선택--</option>
-		              	<option value="0">0</option>
-		               	<option value="1">1</option>
-		               	<option value="2">2</option>
-		               	<option value="3">3</option>
-		               	<option value="4">4</option>
-		               	<option value="5">5</option>
-		               	<option value="6">6</option>
-		               	<option value="7">7</option>
-		               	<option value="8">8</option>
-		               	<option value="9">9</option>
+		              	<option value="0" <c:if test="${ oVO.shot eq 0 }">selected="selected"</c:if>>0</option>
+		               	<option value="1" <c:if test="${ oVO.shot eq 1 }">selected="selected"</c:if>>1</option>
+		               	<option value="2" <c:if test="${ oVO.shot eq 2 }">selected="selected"</c:if>>2</option>
+		               	<option value="3" <c:if test="${ oVO.shot eq 3 }">selected="selected"</c:if>>3</option>
+		               	<option value="4" <c:if test="${ oVO.shot eq 4 }">selected="selected"</c:if>>4</option>
+		               	<option value="5" <c:if test="${ oVO.shot eq 5 }">selected="selected"</c:if>>5</option>
+		               	<option value="6" <c:if test="${ oVO.shot eq 6 }">selected="selected"</c:if>>6</option>
+		               	<option value="7" <c:if test="${ oVO.shot eq 7 }">selected="selected"</c:if>>7</option>
+		               	<option value="8" <c:if test="${ oVO.shot eq 8 }">selected="selected"</c:if>>8</option>
+		               	<option value="9" <c:if test="${ oVO.shot eq 9 }">selected="selected"</c:if>>9</option>
 		            </select>
 		        </div>
 		        <div class="option">
 		            <label for="size-option">사이즈 선택(S)</label>
 		            <div class="option">
-		            <input type="radio" name="sizeS" value="Y" style="margin-right: 5px;"> 예
+		            <input type="radio" name="sizeS" value="Y" style="margin-right: 5px;" <c:if test="${ oVO.sizeS eq 'Y' }">checked="checked"</c:if>> 예
 		            </div>
 		            <div class="option">
-		            <input type="radio" name="sizeS" value="N" style="margin-right: 5px;"> 아니오
+		            <input type="radio" name="sizeS" value="N" style="margin-right: 5px;" <c:if test="${ oVO.sizeS eq 'N' }">checked="checked"</c:if>> 아니오
 		            </div>
 		        </div>
 		        <div class="option">
 		            <label for="size-option">사이즈 선택(M)</label>
 		            <div class="option">
-		            <input type="radio" name="sizeM" value="Y" style="margin-right: 5px;"> 예
+		            <input type="radio" name="sizeM" value="Y" style="margin-right: 5px;" <c:if test="${ oVO.sizeM eq 'Y' }">checked="checked"</c:if>> 예
 		            </div>
 		            <div class="option">
-		            <input type="radio" name="sizeM" value="N" style="margin-right: 5px;"> 아니오
+		            <input type="radio" name="sizeM" value="N" style="margin-right: 5px;" <c:if test="${ oVO.sizeM eq 'N' }">checked="checked"</c:if>> 아니오
 		            </div>
 		        </div>
 		        <div class="option">
 		            <label for="size-option">사이즈 선택(L)</label>
 					<div class="option">
-		            <input type="radio" name="sizeL" value="Y" style="margin-right: 5px;"> 예
+		            <input type="radio" name="sizeL" value="Y" style="margin-right: 5px;" <c:if test="${ oVO.sizeL eq 'Y' }">checked="checked"</c:if>> 예
 		            </div>
 		            <div class="option">
-		            <input type="radio" name="sizeL" value="N" style="margin-right: 5px;"> 아니오
+		            <input type="radio" name="sizeL" value="N" style="margin-right: 5px;" <c:if test="${ oVO.sizeL eq 'N' }">checked="checked"</c:if>> 아니오
 		            </div>
 		        </div>
 		        <div class="option">
 		            <label for="syrup-option">시럽 추가</label>
-		            	<select size="1" id="addSyrup" name="syrup" class="inputBox">
+		            	<select size="1" id="syrup" name="syrup" class="inputBox">
 		                   	<option value="">--선택--</option>
-		                   	<option value="0">0</option>
-		                   	<option value="1">1</option>
-		                   	<option value="2">2</option>
-		                   	<option value="3">3</option>
-		                   	<option value="4">4</option>
-		                   	<option value="5">5</option>
-		                   	<option value="6">6</option>
-		                   	<option value="7">7</option>
-		                   	<option value="8">8</option>
-		                   	<option value="9">9</option>
+		                   	<option value="0" <c:if test="${ oVO.syrup eq 0 }">selected="selected"</c:if>>0</option>
+		                   	<option value="1" <c:if test="${ oVO.syrup eq 1 }">selected="selected"</c:if>>1</option>
+		                   	<option value="2" <c:if test="${ oVO.syrup eq 2 }">selected="selected"</c:if>>2</option>
+		                   	<option value="3" <c:if test="${ oVO.syrup eq 3 }">selected="selected"</c:if>>3</option>
+		                   	<option value="4" <c:if test="${ oVO.syrup eq 4 }">selected="selected"</c:if>>4</option>
+		                   	<option value="5" <c:if test="${ oVO.syrup eq 5 }">selected="selected"</c:if>>5</option>
+		                   	<option value="6" <c:if test="${ oVO.syrup eq 6 }">selected="selected"</c:if>>6</option>
+		                   	<option value="7" <c:if test="${ oVO.syrup eq 7 }">selected="selected"</c:if>>7</option>
+		                   	<option value="8" <c:if test="${ oVO.syrup eq 8 }">selected="selected"</c:if>>8</option>
+		                   	<option value="9" <c:if test="${ oVO.syrup eq 9 }">selected="selected"</c:if>>9</option>
 		        	    </select>
 		           	</div>
 		        <div class="option">
 		            <label for="reusable-cup">다회용 컵 사용</label>
 		            <div class="option">
-		           	<input type="radio" name="multiCup" value="Y" style="margin-right: 5px;">사용
+		           	<input type="radio" name="multiCup" value="Y" style="margin-right: 5px;" <c:if test="${ oVO.multiCup eq 'Y' }">checked="checked"</c:if>>사용
 		           	</div>
 		           	<div class="option">
-		            <input type="radio" name="multiCup" value="N" style="margin-right: 5px;">사용하지 않음
+		            <input type="radio" name="multiCup" value="N" style="margin-right: 5px;" <c:if test="${ oVO.multiCup eq 'N' }">checked="checked"</c:if>>사용하지 않음
 		            </div>
 		        </div>
 		    </div>
@@ -449,8 +545,8 @@
 			<!-- 영양 성분표 제공 여부 -->
 			<fieldset>
 			    <legend>영양 성분표 제공 여부:</legend>
-			    <label><input type="radio" name="ingredientFlag" value="Y" onclick="toggleTable(true)"> 제공</label>
-			    <label><input type="radio" name="ingredientFlag" value="N" onclick="toggleTable(false)"> 미제공</label>
+			    <label><input type="radio" name="ingredientFlag" value="Y" <c:if test="${ pVO.ingredientFlag eq 'Y' }">checked="checked"</c:if>> 제공</label>
+			    <label><input type="radio" name="ingredientFlag" value="N" <c:if test="${ pVO.ingredientFlag eq 'N' }">checked="checked"</c:if>> 미제공</label>
 			
 			    <table id="ingredientTable">
 			        <tr>
@@ -459,27 +555,27 @@
 			        </tr>
 			        <tr>
 			            <td>카페인</td>
-			            <td><input type="text" name="caffeine" value="237"></td>
+			            <td><input type="text" id="caffeine" name="caffeine" value="${ iVO.caffeine }"></td>
 			        </tr>
 			        <tr>
 			            <td>칼로리</td>
-			            <td><input type="text" name="calorie" value="14"></td>
+			            <td><input type="text" id="calorie" name="calorie" value="${ iVO.calorie }"></td>
 			        </tr>
 			        <tr>
 			            <td>나트륨</td>
-			            <td><input type="text" name="natrium" value="4"></td>
+			            <td><input type="text" id="natrium" name="natrium" value="${ iVO.natrium }"></td>
 			        </tr>
 			        <tr>
 			            <td>당류</td>
-			            <td><input type="text" name="sugar" value="0"></td>
+			            <td><input type="text" id="sugar" name="sugar" value="${ iVO.sugar }"></td>
 			        </tr>
 			        <tr>
 			            <td>포화지방</td>
-			            <td><input type="text" name="fattyAcid" value="0"></td>
+			            <td><input type="text" id="fattyAcid" name="fattyAcid" value="${ iVO.fattyAcid }"></td>
 			        </tr>
 			        <tr>
 			            <td>단백질</td>
-			            <td><input type="text" name="protein" value="0"></td>
+			            <td><input type="text" id="protein" name="protein" value="${ iVO.protein }"></td>
 			        </tr>
 			    </table>
 			</fieldset>
@@ -487,14 +583,13 @@
 			            <!-- 제출 버튼 -->
 			            <!-- <button type="submit">수정 내용 저장</button> -->
 				        <div style="text-align: center;">
-				        <button type="button" class="confirm" id="confirm">
-				        <a href="http://localhost/jsp_prj/manager/menu/getListDrink.jsp">확인</a></button>
+				        <button type="button" class="confirm" id="confirm">확인</button>
 				        <button type="button" class="answer" id="answer">수정</button>
-				        <button type="button" class="cancel" id="cancel">탈퇴</button>
+				        <button type="button" class="cancel" id="cancel">삭제</button>
 				        </div>
 			        </form>
 			    </div>
-
+			<canvas class="my-4 w-100" id="myChart" width="900" height="100"></canvas>
         </main>
     </div>
 </div>
@@ -502,67 +597,4 @@
 
 <script src="chart.umd.js" integrity="sha384-eI7PSr3L1XLISH8JdDII5YN/njoSsxfbrkCTnJrzXt+ENP5MOVBxD+l6sEG4zoLp" crossorigin="anonymous"></script><script src="dashboard.js"></script></body>
 </body>
-<!-- 모달 버튼 -->
-    <!-- 
-        btn : [bootstrap] 버튼 사용
-        btn-sm : [bootstrap] 작은 버튼
-        btn-info : [bootstrap] 버튼 테마 적용(청색)
-        ml-2 : [bootstrap] margin left의 줄임말, - 뒤 숫자 만큼 margin을 줌
-        mt-2 : [bootstrap] margin top의 줄임말, - 뒤 숫자 만큼 margin을 줌
-        modalBtn : 작성자는 클릭 이벤트에 사용, 여러 버튼을 사용할 때 주로 이용함
-     -->
-<!-- modal 공간 -->
-<div class="modal fade" id="delete-confirm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">경고</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" style="text-align: center;">
-      	<span style="font-size: 20px;"><strong>고객의 소리를 삭제하시겠습니까?</strong></span><br><br>
-      	이 작업은 되돌릴 수 없습니다.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-        <button type="button" class="btn btn-danger" id="delete">삭제</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="answer-confirm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-  
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">알림</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" style="text-align: center;">
-      	<span style="text-align: center;">정보가 수젱되었습니다.</span>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="answer-alert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-  
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">알림</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" style="text-align: center;">
-      	<span style="text-align: center;">답변을 입력해주세요.</span>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 </html>

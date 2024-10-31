@@ -1,12 +1,17 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page import="java.sql.SQLException" %>
+<%@ page import="project.manager.customer.CustomerDAO" %>
+<%@ page import="project.manager.customer.CustomerVO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="project.manager.customer.CustomerUtil" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"
-    info="공통 디자인을 사용하는 페이지"
-    %>
-<%--관리자 세션을 검증하는 jsp include--%>
-<jsp:include page="../common/jsp/manager_session_chk.jsp"/>
+         pageEncoding="UTF-8" %>
 
+<%--관리자 세션을 검증하는 jsp include--%>
+<%@ include file="../common/jsp/manager_session_chk.jsp"%>
 <!doctype html>
-<html lang="en" data-bs-theme="auto">
+<html lang="kor" data-bs-theme="auto">
 <head><script src="/docs/5.3/assets/js/color-modes.js"></script>
 
     <meta charset="utf-8">
@@ -25,16 +30,16 @@
 	<!-- bootstrap -->
     <link href="bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css" />
+    <!-- jQuery CDN 시작 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
     <meta name="theme-color" content="#712cf9">
     <style>
-
         @media (min-width: 768px) {
             .bd-placeholder-img-lg {
                 font-size: 3.5rem;
             }
         }
-
         .bi {
             vertical-align: -.125em;
             fill: currentColor;
@@ -53,7 +58,7 @@
         .bd-mode-toggle .dropdown-menu .active .bi {
             display: block !important;
         }
-        form { max-width: 900px; margin: 0 auto; }
+        #listCustomerDiv { max-width: 900px; margin: 0 auto  }
         a {	text-decoration: none; color: #333;	}
 		a:hover { text-decoration: underline; }
         span.active { padding: 10px; color: #FFF; background-color: #4CAF50; border-radius: 20px }
@@ -64,12 +69,39 @@
 			padding: 12px;
 			text-align: left;
 		}
-		
-        
     </style>
+    <script>
+        $(function () {
+            // 엔터 + 클릭일 떄 chknull();
+            $("#keyword").keyup(function (evt) {
+                if(evt.which==13){
+                    chkNull();
+                }
+            });
+
+            $("#btn").click(function () {
+                chkNull();
+            });
+
+            // 검색으로 선택한 컬럼명과 키워드를 설정(JSP코드로 작성가능하다.)
+            if(${not empty param.keyword}){
+                $("#field").val("${param.field}");
+                $("#keyword").val("${param.keyword}");
+            }
+        });
+
+        function chkNull() {
+            var keyword = $("#keyword").val();
+            if(keyword.length<3){
+                alert("검색 키워드는 3글자 이상 입력하셔야 합니다.");
+                return;
+            }
+
+            $("#searchFrm").submit();
+        }
 
 
-
+    </script>
 
 </head>
 <body>
@@ -78,7 +110,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
+        <div class="border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary" style="height: 910px">
             <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
 
                 <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
@@ -102,10 +134,10 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/getListOrder.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/selectNotReceivedOrderList.jsp">
                                 <i class="bi bi-cart"></i>
                                 	주문 관리
-                            </a>                                                        
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link d-flex align-items-center gap-2 active" href="http://localhost/jsp_prj/manager/customer/list_customer.jsp">
@@ -137,197 +169,121 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2"><strong>회원관리</strong></h1>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group me-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">공유</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary">추출</button>
-                    </div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-1">
-                        <i class="bi bi-calendar3"></i>
-                        이번주
-                    </button>
-                </div>
+                <jsp:useBean id="sVO" scope="page" class="project.manager.customer.SearchVO"/>
+                <jsp:setProperty name="sVO" property="*"/>
             </div>
-            <!--  -->
-       <div class="search-bar">
-      	<select id="subject" class="search-bar">
-			<option value="">--분류--</option>
-			<option value="id" name="cusId">ID</option>
-			<option value="이름" name="name">이름</option>
-		</select>
-        <input type="text" class="keyword" name="keyword" placeholder="회원 검색...">
-        <button>검색</button>
-    </div>
-
-	<form>
-    <table class="user">
-        <thead>
-            <tr>
-                <th class="id">ID</th>
-                <th class="name">이름</th>
-                <th class="phone">휴대전화</th>
-                <th class="email">이메일</th>                
-                <th class="inputDate">가입날짜</th>                
-                <th class="grade">회원 등급</th>
-                <th class="cusFlag">회원 상태</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="id"><a href="http://localhost/jsp_prj/manager/customer/modify_customer.jsp">user1</a></td>
-                <td class="name">김회원</td>
-                <td class="phone">010-1234-5678</td>
-                <td class="email">test@test1.com</td>
-                <td class="inputDate">2024-09-25</td>
-                <td class="grade">실버</td>
-                <td class="cusFlag"><span class="active">활동</span></td>
-            </tr>
-            <tr>
-                <td class="id"><a href="http://localhost/jsp_prj/manager/customer/modify_customer.jsp">user22</a></td>
-                <td class="name">이유저</td>
-                <td class="phone">010-2345-6789</td>
-                <td class="email">test2@test2.com</td>
-                <td class="inputDate">2024-09-25</td>
-                <td class="grade">골드</td>
-                <td class="cusFlag"><span class="active">활동</span></td>
-            </tr>
-            <tr>
-                <td class="id"><a href="http://localhost/jsp_prj/manager/customer/modify_customer.jsp">userXrd</a></td>
-                <td class="name">박사원</td>
-                <td class="phone">010-3333-4545</td>
-                <td class="email">test3@test3.com</td>
-                <td class="inputDate">2024-09-25</td>    
-                <td class="grade">실버</td>
-                <td class="cusFlag"><span class="active">활동</span></td>
-            </tr>
-            <tr>
-                <td class="id"><a href="http://localhost/jsp_prj/manager/customer/modify_customer.jsp">user4th</a></td>
-                <td class="name">최멤버</td>
-                <td class="phone">010-4321-5978</td>
-                <td class="email">test4@test4.com</td>
-                <td class="inputDate">2024-09-25</td>
-                <td class="grade">실버</td>
-                <td class="cusFlag"><span class="inactive">탈퇴</span></td>
-            </tr>
-            <tr>
-                <td class="id"><a href="http://localhost/jsp_prj/manager/customer/modify_customer.jsp">user555</a></td>
-                <td class="name">정가입</td>
-                <td class="phone">010-5678-9999</td>
-                <td class="email">test5@test5.com</td>
-                <td class="inputDate">2024-09-25</td>
-                <td class="grade">실버</td>
-                <td class="cusFlag"><span class="active">활동</span></td>
-            </tr>
-            <tr>
-                <td class="id"><a href="http://localhost/jsp_prj/manager/customer/modify_customer.jsp">6ser</a></td>
-                <td class="name">황보레옹</td>
-                <td class="phone">010-9797-1597</td>
-                <td class="email">test6@test6.com</td>
-                <td class="inputDate">2024-09-25</td>
-                <td class="grade">골드</td>
-                <td class="cusFlag"><span class="inactive">탈퇴</span></td>
-            </tr>
-            <tr>
-                <td class="id"><a href="http://localhost/jsp_prj/manager/customer/modify_customer.jsp">user777</a></td>
-                <td class="name">김신입</td>
-                <td class="phone">010-7777-7777</td>
-                <td class="email">test7@test7.com</td>
-                <td class="inputDate">2024-09-25</td>
-                <td class="grade">골드</td>
-                <td class="cusFlag"><span class="active">활동</span></td>
-            </tr>
-            <tr>
-                <td class="id"><a href="http://localhost/jsp_prj/manager/customer/modify_customer.jsp">user8888</a></td>
-                <td class="name">하완장</td>
-                <td class="phone">010-4567-8888</td>
-                <td class="email">test8@test8.com</td>
-                <td class="inputDate">2024-09-25</td>
-                <td class="grade">실버</td>
-                <td class="cusFlag"><span class="inactive">탈퇴</span></td>
-            </tr>
-            <tr>
-                <td class="id"><a href="http://localhost/jsp_prj/manager/customer/modify_customer.jsp">user999</a></td>
-                <td class="name">강철</td>
-                <td class="phone">010-1875-0999</td>
-                <td class="email">test9@test9.com</td>
-                <td class="inputDate">2024-09-25</td>
-                <td class="grade">실버</td>
-                <td class="cusFlag"><span class="active">활동</span></td>
-            </tr>
-            <tr>
-                <td class="id"><a href="http://localhost/jsp_prj/manager/customer/modify_customer.jsp">user0000</a></td>
-                <td class="name">장난감</td>
-                <td class="phone">010-1577-8848</td>
-                <td class="email">test0@test10.com</td>
-                <td class="inputDate">2024-09-25</td>
-                <td class="grade">실버</td>
-                <td class="cusFlag"><span class="active">활동</span></td>
-            </tr>
-        </tbody>
-    </table>
-	</form>
-
-    <script>
-        var modal = document.getElementById("deleteModal");
-        var span = document.getElementsByClassName("close")[0];
-        var deleteConfirmMessage = document.getElementById("deleteConfirmMessage");
-        var userToDelete = "";
+<%
+    sVO.setField(CustomerUtil.numToField(sVO.getField()));
 
 
-        function closeModal() {
-            modal.style.display = "none";
+    int totalCount = 0;
+    CustomerDAO cDAO = CustomerDAO.getInstance();
+    try {
+        totalCount = cDAO.countCustomer(sVO);
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    //한 페이지에 회원 10명 보여줄 것.
+    int pageScale = 10;
+    int totalPage = (int) Math.ceil(((double) totalCount / pageScale));
+    String paramPage = request.getParameter("currentPage");
+
+    int currentPage = 1;
+
+    if (paramPage != null) {
+        try {
+            currentPage = Integer.parseInt(paramPage);
+        } catch (NumberFormatException e) {
         }
+    }
+    // 시작 레코드 번호
+    int startNum = currentPage * pageScale - pageScale + 1;
+    // 마지막 레코드 번호
+    int endNum = startNum + pageScale - 1;
 
-        span.onclick = closeModal;
+    // 그걸 sVO에 담는다.
+    sVO.setStartNum(startNum);
+    sVO.setEndNum(endNum);
 
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-    </script>
-    
-                    <ul class="pagination justify-content-center">
-						<li class="page-item active">
-						<a class="page-link" href="#">1</a>
-						</li>
-  						<li class="page-item">
-						<a class="page-link" href="#">2</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">3</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">4</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">5</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">6</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">7</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">8</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">9</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">10</a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#">
-						<i class="bi bi-chevron-right"></i></a>
-						</li>
-						<li class="page-item">
-						<a class="page-link" href="#" title="첫 글 보기">
-						<i class="bi bi-chevron-double-right"></i></a>
-						</li>
-					</ul>
+    List<CustomerVO> listCustomer = null;
+    try {
+        listCustomer = cDAO.selectAllCustomer(sVO); // 시작 번호, 끝 번호를 사용한 게시글을 조회한다.
 
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    pageContext.setAttribute("totalPage", totalPage);
+    pageContext.setAttribute("listCustomer", listCustomer);
+    pageContext.setAttribute("currentPage", currentPage);
+
+%>
+            <div class="search-bar">
+                <form action="list_customer.jsp" method="get" name="searchFrm" id="searchFrm">
+      	            <select id="field" name="field">
+			             <option value="0" >ID</option>
+			             <option value="1">이름</option>
+		            </select>
+                    <input type="text" class="keyword" name="keyword" placeholder="검색..."/>
+                    <button type="button" name="searchBtn" class="answer" id="searchBtn">검색</button>
+                </form>
+           </div>
+
+            <div id="listCustomerDiv" style="width: 900px; height: 540px">
+                <table >
+                    <thead>
+                        <tr>
+                            <th class="id">ID</th>
+                            <th class="name">이름</th>
+                            <th class="phone">휴대전화</th>
+                            <th class="email">이메일</th>
+                            <th class="inputDate">가입날짜</th>
+                            <th class="grade">회원 등급</th>
+                            <th class="cusFlag">회원 상태</th>
+                        </tr>
+                    </thead>
+                    <c:if test="${empty listCustomer}">
+                        <td style="text-align: center" colspan="7">
+                            가입한 회원이 없거나, DB 문제가 발생했습니다.
+                            <a href="http://localhost/jsp_prj/manager/dashboard/dashboard.jsp">돌아가기</a>
+                        </td>
+                    </c:if>
+                    <tbody>
+
+                    <c:forEach var="cVO" items="${listCustomer}" varStatus="i">
+                        <tr>
+                            <td class="id"><a href="http://localhost/jsp_prj/manager/customer/detail_customer.jsp?cusId=${cVO.cusId}&currentPage=${currentPage}"><c:out value="${cVO.cusId}"/></a></td>
+                            <td class="name"><c:out value="${cVO.name}"/></td>
+                            <td class="phone"><c:out value="${cVO.phone}"/> </td>
+                            <td class="email"><c:out value="${cVO.email}"/> </td>
+                            <td class="inputDate"><fmt:formatDate value="${cVO.inputDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                            <td class="grade"><c:out value="${cVO.grade}"/></td>
+                            <td class="cusFlag">
+                                <c:if test="${cVO.cusFlag eq 'Y'}">
+                                    <span class="active">활동</span>
+                                </c:if>
+                                <c:if test="${cVO.cusFlag eq 'N'}">
+                                    <span class="inactive">비활동</span>
+                                </c:if>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+
+            <%--페이지 네이션--%>
+            <div id="pagination">
+                <ul class="pagination pagination-sm justify-content-center">
+                    <c:forEach var="i" begin="1" end="${totalPage}" step="1">
+                        <li class="page-item ${i == currentPage ? 'active' : ''}">
+                            <a class="page-link" href="list_customer.jsp?currentPage=${i}&keyword=${param.keyword}&field=${param.field}">
+                                <c:out value="${i}"/>
+                            </a>
+                        </li>
+                    </c:forEach>
+                </ul>
+            </div>
         </main>
     </div>
 </div>

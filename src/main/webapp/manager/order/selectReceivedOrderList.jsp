@@ -21,7 +21,7 @@
     <meta name="generator" content="Hugo 0.122.0">
     <link rel="stylesheet" href="http://localhost/jsp_prj/manager/common/css/orderStateList.css">
     <link rel="stylesheet" href="http://localhost/jsp_prj/manager/common/css/orderDetails.css">
-    <title>미수령 주문 상태 확인</title>
+    <title>수령 주문 상태 확인</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/dashboard/">
     <link rel="stylesheet" href="http://localhost/jsp_prj/manager/common/css/project_main.css">
     <!-- Custom styles for this template -->
@@ -119,29 +119,13 @@
 			$(".orderCode").click(function(){
 				openPopup();
 			});//click
-			
-			$("#change").click(function(){
-				changeReceive();
-			})
 	    });//ready
 	    
-	    function changeReceive(String itemNum){
-	    	var cartItemNum = $("#cartItemNum").
-	    	
-	    	var param = { receiptFlag : receiptFlag };
-	    	$.ajax({
-	    		url:"changeProcess.jsp",
-	    		type:"get",
-	    		data:param,
-	    		dataType:"json"
-	    		error:function(xhr){
-	    			console.log(xhr.status);
-	    		},
-	    		success:function(jsonObj){
-	    			alert(jsonObj);
-	    		}
-	    	});/
-	    }//changeReceive
+	    function showTab(tab) {
+	        document.getElementById('received').classList.add('hidden');
+	        document.getElementById('not-received').classList.add('hidden');
+	        document.getElementById(tab).classList.remove('hidden');
+	    }
 	
 	    // 테이블 정렬 함수
 	    let sortDirection = true; // true는 오름차순, false는 내림차순
@@ -254,7 +238,7 @@
         int totalCount = 0;
         OrderDAO oDAO = OrderDAO.getInstance();
         try{
-        	totalCount = oDAO.selectTotalCountNotReceived(sVO);
+        	totalCount = oDAO.selectTotalCountReceived(sVO);
         	//System.out.println(totalCount);
         } catch(SQLException se){
         	se.printStackTrace();
@@ -294,7 +278,7 @@
         
         List<OrderVO> listBoard = null;
         try{
-        	listBoard = oDAO.selectNotReceivedList(sVO);//시작 번호, 끝 번호를 사용한 게시글 조회
+        	listBoard = oDAO.selectReceivedList(sVO);//시작 번호, 끝 번호를 사용한 게시글 조회
         	
 /*         	String tempName="";
         	for(ProductVO tempVO : listBoard){
@@ -321,13 +305,19 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 	    <h1 class="h2"><strong>주문 상태 리스트</strong></h1>
 	</div>
+
+    <!-- 탭 메뉴 -->
+<!--     <div class="tab-container">
+        <div class="tab" onclick="showTab('received')">수령 완료</div>
+        <div class="tab" onclick="showTab('not-received')">미수령</div>
+    </div> -->
     
 	<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="margin-bottom: 30px;">
-	  <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-	  <label class="btn btn-outline-primary" for="btnradio1"><a href="selectNotReceivedOrderList.jsp" style="color:#FFF; font-weight: bold;">미수령 주문</a></label>
+	  <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off">
+	  <label class="btn btn-outline-primary" for="btnradio1"><a href="selectNotReceivedOrderList.jsp" style="color:#0d6efd;">미수령 주문</a></label>
 	
-	  <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-	  <label class="btn btn-outline-primary" for="btnradio2"><a href="selectReceivedOrderList.jsp" style="color:#0d6efd;">수령한 주문</a></label>
+	  <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" checked>
+	  <label class="btn btn-outline-primary" for="btnradio2"><a href="selectReceivedOrderList.jsp" style="color:#FFF; font-weight: bold;">수령한 주문</a></label>
 	</div>
 	
     <form>
@@ -341,14 +331,13 @@
                 <th class="sortable" onclick="sortTable(3, 'not-received')">주문 시간 @</th>
                 <th>주문 수량</th>
                 <th>주문 상태</th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
         <c:if test="${ empty listBoard }">
         <tr>
         	<td style="text-align: center" colspan="6">
-        	현재 미수령한 주문이 없습니다.<br>
+        	현재 수령한 주문이 없습니다.<br>
         	</td>
         </tr>
         </c:if>
@@ -363,8 +352,8 @@
         	<td><c:out value="${ oVO.inputDate }"/></td>
         	<td><c:out value="${ oVO.quantity }"/></td>
         	<td>
-        	<c:if test="${ oVO.receiptFlag eq 'N' }">
-        	<span class="status pending">미수령</span>
+        	<c:if test="${ oVO.receiptFlag eq 'Y' }">
+        	<span class="status completed">수령</span>
         	</c:if>
         	</td>
         </tr>
