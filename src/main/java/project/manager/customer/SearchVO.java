@@ -7,11 +7,8 @@ package project.manager.customer;
  */
 // 시작 번호, 끝 번호, 현재페이지,  + 검색조건
 public class SearchVO {
-    private int startNum;
-    private int endNum;
-    private int currentPage;
-    private String field = "0";
-    private String keyword;
+    private int startNum, endNum, currentPage, totalPage, totalCount;// 시작번호, 끝번호, 현재 페이지 번호, 총 페이지 수 
+    private String field = "0", keyword, url;
 
 
     public String getKeyword() {
@@ -53,5 +50,33 @@ public class SearchVO {
     public void setStartNum(int startNum) {
         this.startNum = startNum;
     }
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public int getTotalPage() {
+		return totalPage;
+	}
+
+	public void setTotalPage(int totalPage) {
+		this.totalPage = totalPage;
+	}
+
+	public int getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(int totalCount) {
+		this.totalCount = totalCount;
+	}
+	
+	
+    
+    
 } // SearchVO 끝
 

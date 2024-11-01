@@ -9,7 +9,7 @@
     info="아이스크림 관리"
     %>
 <%--관리자 세션을 검증하는 jsp include--%>
-<%-- <jsp:include page="../common/jsp/manager_session_chk.jsp"/> --%>
+<jsp:include page="../common/jsp/manager_session_chk.jsp"/>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!doctype html>
@@ -142,19 +142,19 @@ function loginMove(){
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/getListDrink.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectCoffeeList.jsp">
                                 <svg class="bi"><use xlink:href="#cup-hot"/></svg>
                                 음료 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2 active" href="http://localhost/jsp_prj/manager/menu/getListDessertIcecream.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2 active" href="http://localhost/jsp_prj/manager/menu/selectDessertList.jsp">
                             	<svg class="bi"><use xlink:href="#cake"/></svg>
                                 디저트&아이스크림 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/getListOrder.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/selectNotReceivedOrderList.jsp">
                                 <i class="bi bi-cart"></i>
                                 	주문 관리
                             </a>                                                        
@@ -324,7 +324,7 @@ function loginMove(){
 		<!-- pagination end -->
         </div>
 			<c:set var="loginFlag" value="javascript:loginMove()"/>
-			<c:if test="${ not empty userData }">
+			<c:if test="${ not empty managerId }">
 			<c:set var="loginFlag" value="insertIcecream.jsp"/>
 			</c:if>
         	<button class="btn btn-primary" style="border:none; float: right; margin-left: 10px; border-radius: 20px; padding: 10px;">

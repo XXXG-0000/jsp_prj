@@ -315,7 +315,7 @@
         <div class="border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
             <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
 
-                <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
+               	<div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
                     <ul class="nav nav-pills flex-column">
                         <li class="nav-item">
                             <a class="nav-link d-flex align-items-center gap-2" aria-current="page" href="http://localhost/jsp_prj/manager/dashboard/dashboard.jsp">
@@ -324,19 +324,19 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/getListDrink.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectCoffeeList.jsp">
                                 <svg class="bi"><use xlink:href="#cup-hot"/></svg>
                                 음료 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2 active" href="http://localhost/jsp_prj/manager/menu/getListDessertIcecream.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2 active" href="http://localhost/jsp_prj/manager/menu/selectDessertList.jsp">
                             	<svg class="bi"><use xlink:href="#cake"/></svg>
                                 디저트&아이스크림 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/getListOrder.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/selectNotReceivedOrderList.jsp">
                                 <i class="bi bi-cart"></i>
                                 	주문 관리
                             </a>                                                        

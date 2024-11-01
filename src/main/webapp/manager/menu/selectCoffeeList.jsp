@@ -95,7 +95,7 @@ $(function(){
 		chkNull();
 	});//click
 	
-	// 검색으로 선택한 컬럼명과 키워드 설정, JSP 코드로 작성 가능
+	// 검색으로 선택한 키워드 설정, JSP 코드로 작성 가능
 	if(${ not empty param.keyword }){
 		$("#keyword").val("${ param.keyword }");
 	}
@@ -130,6 +130,7 @@ function loginMove(){
 
 <div class="container-fluid">
     <div class="row">
+		<!-- side-bar -->
         <div class="border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
             <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
 
@@ -142,19 +143,19 @@ function loginMove(){
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2 active" href="http://localhost/jsp_prj/manager/menu/getListDrink.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2 active" href="http://localhost/jsp_prj/manager/menu/selectCoffeeList.jsp">
                                 <svg class="bi"><use xlink:href="#cup-hot"/></svg>
                                 음료 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/getListDessertIcecream.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectDessertList.jsp">
                             	<svg class="bi"><use xlink:href="#cake"/></svg>
                                 디저트&아이스크림 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/getListOrder.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/selectNotReceivedOrderList.jsp">
                                 <i class="bi bi-cart"></i>
                                 	주문 관리
                             </a>                                                        
@@ -185,6 +186,7 @@ function loginMove(){
                 </div>
             </div>
         </div>
+        <!-- side-bar end -->
         
         <jsp:useBean id="sVO" class="project.manager.menu.SearchVO" scope="page"/>
         <jsp:setProperty property="*" name="sVO"/>
@@ -237,6 +239,7 @@ function loginMove(){
         try{
         	listBoard = dDAO.selectCoffeeBoard(sVO);//시작 번호, 끝 번호를 사용한 게시글 조회
         	
+        	//메뉴명 일정 글자수 초과시 ...처리
 /*         	String tempName="";
         	for(ProductVO tempVO : listBoard){
         		tempName = tempVO.getiNameK();

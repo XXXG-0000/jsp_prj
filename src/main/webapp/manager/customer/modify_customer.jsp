@@ -134,22 +134,22 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/getListDrink.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectDrinkList.jsp">
                                 <svg class="bi"><use xlink:href="#cup-hot"/></svg>
                                 음료 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/getListDessertIcecream.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectDessertList.jsp">
                             	<svg class="bi"><use xlink:href="#cake"/></svg>
                                 디저트&아이스크림 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/getListOrder.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/order/selectNotReceivedOrderList.jsp">
                                 <i class="bi bi-cart"></i>
                                 	주문 관리
-                            </a>                                                        
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link d-flex align-items-center gap-2 active" href="http://localhost/jsp_prj/manager/customer/list_customer.jsp">

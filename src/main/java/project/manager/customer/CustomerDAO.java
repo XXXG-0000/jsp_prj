@@ -1,6 +1,6 @@
 package project.manager.customer;
 
-import  kr.co.sist.dao.DbConnection;
+import kr.co.sist.dao.DbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,44 +38,36 @@ public class CustomerDAO {
      */
     public int countCustomer(SearchVO searchVO) throws SQLException {
         int count = 0;
-
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        //1. JNDI 사용객체 생성
-        //2. DBCP에서 Datasource 얻기
         DbConnection dbCon = DbConnection.getInstance();
-        try{
-
-            //3. Connecion 얻기
+        try {
             conn = dbCon.getConn();
             StringBuilder countQuery = new StringBuilder();
-            countQuery.append("select count(*) cnt from Customer");
+            countQuery.append("SELECT COUNT(*) AS cnt FROM Customer");
 
-            if(searchVO.getKeyword()!=null && searchVO.getKeyword().equals("")) {
-                countQuery.append(" where instr(").append(searchVO.getField()).append(",?)!=0");
+            if (searchVO.getKeyword() != null && !searchVO.getKeyword().equals("")) {
+                countQuery.append(" WHERE INSTR(").append(searchVO.getField()).append(", ?) != 0");
             }
 
-
-            //4. 쿼리문 생성 객체 얻기
             pstmt = conn.prepareStatement(countQuery.toString());
 
-            if(searchVO.getKeyword()!=null && searchVO.getKeyword().equals("")) {
+            if (searchVO.getKeyword() != null && !searchVO.getKeyword().equals("")) {
                 pstmt.setString(1, searchVO.getKeyword());
             }
 
-            //6. 쿼리문 수행후 결과 얻기
             rs = pstmt.executeQuery();
-            if(rs.next()) {
+            if (rs.next()) {
                 count = rs.getInt("cnt");
             }
-        }finally {
-            //7. 연결 끊기
+        } finally {
             dbCon.dbClose(rs, pstmt, conn);
         }
         return count;
     }
+
 
 
     //selectAll : 모든회원의 정보를 출력한다.
@@ -86,22 +78,17 @@ public class CustomerDAO {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        //1. JNDI 사용객체 생성
-        //2. DBCP에서 Datasource 얻기
         DbConnection dbCon = DbConnection.getInstance();
-        try{
-            //3. Connecion 얻기
+        try {
             conn = dbCon.getConn();
-            StringBuilder selectSql =new StringBuilder();
-            selectSql
-                    .append("SELECT * FROM (")
+            StringBuilder selectSql = new StringBuilder();
+            selectSql.append("SELECT * FROM (")
                     .append("    SELECT A.*, ROWNUM AS RNUM FROM (")
-                    .append("        SELECT CUS_ID, NAME, PHONE, EMAIL, INPUT_DATE, GRADE, CUS_FLAG")
-                    .append("        FROM CUSTOMER");
+                    .append("        SELECT CUS_ID, NAME, PHONE, EMAIL, INPUT_DATE, GRADE, CUS_FLAG FROM CUSTOMER");
 
-                    if(searchVO.getKeyword()!=null && !searchVO.getKeyword().equals("")){
-                     selectSql.append("   WHERE instr(").append(searchVO.getField()).append(", ?) != 0");
-                     }
+            if (searchVO.getKeyword() != null && !searchVO.getKeyword().equals("")) {
+                selectSql.append(" WHERE INSTR(").append(searchVO.getField()).append(", ?) != 0");
+            }
             selectSql.append("        ORDER BY INPUT_DATE DESC")
                     .append("    ) A WHERE ROWNUM <= ?")
                     .append(") WHERE RNUM >= ?");
@@ -109,18 +96,18 @@ public class CustomerDAO {
             pstmt = conn.prepareStatement(selectSql.toString());
             int bindIndex = 1;
 
-// 검색어가 있을 경우 검색어 바인드
-            if(searchVO.getKeyword()!=null && !searchVO.getKeyword().equals("")){
+            // 검색어가 있을 경우 검색어 바인드
+            if (searchVO.getKeyword() != null && !searchVO.getKeyword().equals("")) {
                 pstmt.setString(bindIndex++, searchVO.getKeyword());
             }
-// 페이징 처리를 위한 바인드
+
+            // 페이징 처리를 위한 바인드
             pstmt.setInt(bindIndex++, searchVO.getEndNum());
             pstmt.setInt(bindIndex, searchVO.getStartNum());
-            //6. 쿼리문 수행후 결과 얻기
+
             rs = pstmt.executeQuery();
-            CustomerVO customerVO = null;
-            while(rs.next()) {
-                customerVO = new CustomerVO();
+            while (rs.next()) {
+                CustomerVO customerVO = new CustomerVO();
                 customerVO.setCusId(rs.getString("cus_id"));
                 customerVO.setName(rs.getString("name"));
                 customerVO.setPhone(rs.getString("phone"));
@@ -130,8 +117,7 @@ public class CustomerDAO {
                 customerVO.setCusFlag(rs.getString("cus_flag"));
                 list.add(customerVO);
             }
-        }finally {
-            //7. 연결 끊기
+        } finally {
             dbCon.dbClose(rs, pstmt, conn);
         }
         return list;
@@ -174,14 +160,12 @@ public class CustomerDAO {
                 cVO.setCusFlag(rs.getString("cus_flag"));
                 cVO.setPhone(rs.getString("phone"));
             }
-
         }finally {
             //7. 연결 끊기
             dbCon.dbClose(rs, pstmt, conn);
         }
         return cVO;
     }
-
 
 
     //Update : 회원의 정보를 변경한다. cusId와 가입일은 불가.

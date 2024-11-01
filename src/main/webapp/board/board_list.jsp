@@ -187,7 +187,7 @@ function loginMove(){
 	<tr>
 		<td><c:out value="${ totalCount-(currentPage-1)*pageScale-i.index }"/></td>
 		<c:set var="listCount" value="${ listCount-1 }"/>
-		<td><a href="board_detail.jsp?num=${ bVO.num }&currentPage=${ currentPage }${ searchParam }&"><c:out value="${ bVO.subject }"/></a></td>
+		<td><a href="board_detail.jsp?num=${ bVO.num }&currentPage=${ currentPage }${ searchParam }"><c:out value="${ bVO.subject }"/></a></td>
 		<td><c:out value="${ bVO.writer }/${ bVO.ip }"></c:out></td>
 		<td><fmt:formatDate value="${ bVO.input_date }" pattern="yyyy-MM-dd EEEE HH:mm"/></td>
 	</tr>

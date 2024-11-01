@@ -5,11 +5,12 @@
 <%@ page import="project.manager.customer.CustomerVO" %>
 <%@ page import="java.util.List" %>
 <%@ page import="project.manager.customer.CustomerUtil" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
 
 <%--관리자 세션을 검증하는 jsp include--%>
-<%@ include file="../common/jsp/manager_session_chk.jsp"%>
+<%--<%@ include file="../common/jsp/manager_session_chk.jsp"%>--%>
 <!doctype html>
 <html lang="kor" data-bs-theme="auto">
 <head><script src="/docs/5.3/assets/js/color-modes.js"></script>
@@ -69,6 +70,7 @@
 			padding: 12px;
 			text-align: left;
 		}
+        #none{display: none}
     </style>
     <script>
         $(function () {
@@ -79,7 +81,7 @@
                 }
             });
 
-            $("#btn").click(function () {
+            $("#searchBtn").click(function () {
                 chkNull();
             });
 
@@ -92,14 +94,12 @@
 
         function chkNull() {
             var keyword = $("#keyword").val();
-            if(keyword.length<3){
+            if(keyword.length<4){
                 alert("검색 키워드는 3글자 이상 입력하셔야 합니다.");
                 return;
             }
-
             $("#searchFrm").submit();
         }
-
 
     </script>
 
@@ -122,13 +122,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/getListDrink.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectDrinkList.jsp">
                                 <svg class="bi"><use xlink:href="#cup-hot"/></svg>
                                 음료 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/getListDessertIcecream.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectDessertList.jsp">
                             	<svg class="bi"><use xlink:href="#cake"/></svg>
                                 디저트&아이스크림 관리
                             </a>
@@ -214,9 +214,10 @@
         e.printStackTrace();
     }
     pageContext.setAttribute("totalPage", totalPage);
+    pageContext.setAttribute("totalCount", totalCount);
     pageContext.setAttribute("listCustomer", listCustomer);
     pageContext.setAttribute("currentPage", currentPage);
-
+    pageContext.setAttribute("pageScale", pageScale);
 %>
             <div class="search-bar">
                 <form action="list_customer.jsp" method="get" name="searchFrm" id="searchFrm">
@@ -224,13 +225,14 @@
 			             <option value="0" >ID</option>
 			             <option value="1">이름</option>
 		            </select>
-                    <input type="text" class="keyword" name="keyword" placeholder="검색..."/>
+                    <input type="text" class="keyword" name="keyword" id="keyword" placeholder="검색..."/>
+                    <input type="text" id="none">
                     <button type="button" name="searchBtn" class="answer" id="searchBtn">검색</button>
                 </form>
            </div>
 
             <div id="listCustomerDiv" style="width: 900px; height: 540px">
-                <table >
+                <table>
                     <thead>
                         <tr>
                             <th class="id">ID</th>
@@ -271,18 +273,55 @@
                     </tbody>
                 </table>
             </div>
-
-            <%--페이지 네이션--%>
+            <%
+                //1. 한 화면에 보여줄 페이지 인덱스 [1][2][3]
+                int pageNumber = 3;
+                //2. 화면에 보여줄 시작 페이지 번호
+                int startPage = ((currentPage-1)/pageNumber)*pageNumber+1;
+                //3. 화면에 보여줄 마지막 페이지 번호를 얻어라
+                int endPage = startPage+pageNumber-1;
+                //4. 총 페이지수가 연산된 마지막 페이지수보다 작다면 총페이지 수가 마지막 페이지 수가 된다.
+                if(totalPage<=endPage){
+                    endPage=totalPage;
+                }
+            %>
             <div id="pagination">
-                <ul class="pagination pagination-sm justify-content-center">
-                    <c:forEach var="i" begin="1" end="${totalPage}" step="1">
-                        <li class="page-item ${i == currentPage ? 'active' : ''}">
-                            <a class="page-link" href="list_customer.jsp?currentPage=${i}&keyword=${param.keyword}&field=${param.field}">
-                                <c:out value="${i}"/>
-                            </a>
-                        </li>
-                    </c:forEach>
-                </ul>
+                <c:if test="${not empty listCustomer}">
+                    <ul class="pagination justify-content-center">
+                        <c:choose>
+                            <%-- 검색 결과가 있는 경우 --%>
+                            <c:when test="${not empty param.keyword}">
+                                <c:choose>
+                                    <c:when test="${totalCount < pageScale}">
+                                        <%-- 검색 결과가 10개 미만이면 [1]만 표시 --%>
+                                        <li class="page-item active">
+                                            <a class="page-link" href="list_customer.jsp?currentPage=1&keyword=${param.keyword}&field=${param.field}">1</a>
+                                        </li>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:forEach var="i" begin="1" end="${totalPage}" step="1">
+                                            <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                                <a class="page-link" href="list_customer.jsp?currentPage=${i}&keyword=${param.keyword}&field=${param.field}">
+                                                    <c:out value="${i}"/>
+                                                </a>
+                                            </li>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:when>
+                            <%-- 전체 리스트인 경우 --%>
+                            <c:otherwise>
+                                <c:forEach var="i" begin="1" end="${totalPage}" step="1">
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <a class="page-link" href="list_customer.jsp?currentPage=${i}">
+                                            <c:out value="${i}"/>
+                                        </a>
+                                    </li>
+                                </c:forEach>
+                            </c:otherwise>
+                        </c:choose>
+                    </ul>
+                </c:if>
             </div>
         </main>
     </div>

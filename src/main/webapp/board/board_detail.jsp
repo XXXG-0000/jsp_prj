@@ -1,3 +1,4 @@
+<%@page import="kr.co.sist.user.board.ReplyDAO"%>
 <%@page import="java.sql.SQLException"%>
 <%@page import="kr.co.sist.user.board.BoardVO"%>
 <%@page import="kr.co.sist.user.board.BoardDAO"%>
@@ -7,6 +8,8 @@
     %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><!-- 시간 받기 -->
+<jsp:useBean id="rVO" class="kr.co.sist.user.board.ReplyVO" scope="page"/>
+<jsp:setProperty property="*" name="rVO"/>
 <% 
 	//실제 글의 고유번호를 받는다
 	String tempNum = request.getParameter("num");
@@ -28,7 +31,16 @@
 		se.printStackTrace();
 	}//end catch
 	
+	ReplyDAO rDAO = ReplyDAO.getInstance();
+	int cnt = 0;
+	try {
+		cnt = rDAO.countReply(rVO);
+	} catch(SQLException se){
+		se.printStackTrace();
+	}//end catch
+	
 	pageContext.setAttribute("bVO", bVO);
+	pageContext.setAttribute("cnt", cnt);
 %>
 
 <!DOCTYPE html>
@@ -53,7 +65,8 @@
 
 <style type="text/css">
 /* CSS영역 => CSS 디자인 코드 작성 */
-
+#replyMenu { cursor: pointer; }
+#replyContentDiv{ display: none; }
 </style>
 <script type="text/javascript">
 /* JS 영역 => JS 코드 작성 */
@@ -97,7 +110,163 @@ $(function(){
 	$("#btnDelete").click(function(){
 		movePage('d');
 	})//click
+	
+	<c:if test="${ empty userData.id }">
+	$("#btnReplyWrite").click(function(){
+		if(confirm("로그인 한 사용자만 댓글을 작성할 수 있습니다.\n로그인 하시겠습니까?")){
+			location.href="../login/login_frm.jsp";
+		}
+	});
+	</c:if>
+	
+	<c:if test="${ not empty userData.id }">
+	$("#btnReplyWrite").click(function(){
+		var content = $("#replyContent").val();
+		if(content.trim() == ""){//댓글의 내용이 없을 경우
+			alert("댓글의 내용은 필수입니다.");
+			$("#replyContent").focus();
+			return;
+		}// end if
+		
+		var param = { content: content, ref_num: ${ bVO.num } }// 내용, 원글 번호
+		
+		$.ajax({
+			url:"reply_write_process.jsp",
+			type:"post",
+			data: param,
+			dataType: "json",
+			error:function(xhr){
+				console.log(xhr.status);
+				alert("댓글이 정상적으로 작성되지 않았습니다.");
+			},
+			success:function(jsonObj){
+				//alert(jsonObj.result);//true
+				if(jsonObj.result){
+					if(!jsonObj.loginStatus){
+						alert("로그인 정보가 존재하지 않습니다. 다시 로그인 해주세요.");
+						return;
+					}//end if
+					
+					var msg = "댓글 작성 실패.";
+					if(jsonObj.insertStatus){
+						msg="댓글을 작성하였습니다.";
+						$("#replyMenu").html("열기(<span title='댓글의 수'>"+rowCnt()+"</span>)");
+					}// end if;
+					alert(msg);
+				}//end if
+				$("#replyContent").val("");
+			}
+		});//ajax
+		
+	});//click	
+	</c:if>
+	
+	$("#replyMenu").click(function(){
+		chgTxt();
+	});//click
+	
+	$("#replyMenu").html("열기(<span title='댓글의 수'>"+rowCnt()+"</span>)");
+	
 }); // ready
+
+function rowCnt(){
+	var cnt = 0;
+	$.ajax({
+		url:"replyCnt.jsp",
+		type:"get",
+		data: { ref_num: ${ bVO.num }},
+		async:false,
+		dataType: "json",
+		error:function(xhr){
+			console.log(xhr.status);
+		},
+		success:function(jsonObj){
+			cnt = jsonObj.rowCnt;
+		}
+	});
+	return cnt;
+}//rowCnt
+
+function chgTxt(){
+	var txt = $("#replyMenu").text();
+	var menuTxt = "열기(<span title='댓글의 수'>"+rowCnt()+"</span>)";
+	
+	if( txt.startsWith("열기")){
+		menuTxt = "닫기";
+		searchReply();
+	}//end if
+	
+	
+	$("#replyMenu").html(menuTxt);
+	$("#replyContentDiv").toggle();
+}//chgTxt
+
+function searchReply(){
+	var param = { ref_num : ${ bVO.num } };
+	$.ajax({
+		url:"reply_list.jsp",
+		type:"get",
+		data:param,
+		dataType:"json",
+		error:function(xhr){
+			console.log(xhr.status);
+		},
+		success: function(jsonObj){
+			if(jsonObj.resultFlag){
+				var outReply = "<div id='replyBlock'>";
+				
+				$.each(jsonObj.data, function(ind, jsonTemp){
+					outReply += "<div id='replyInnerBox'>";
+					outReply += "<div>" + jsonTemp.content + "</div>";
+					outReply += "<div><strong>작성자</strong>: " + jsonTemp.writer
+						+ ", <strong>작성일</strong>: " + jsonTemp.input_date
+						+ ", <strong>ip</strong>: " + jsonTemp.ip;
+						if(jsonTemp.writer == "${ userData.id }"){//댓글의 작성자와 현재 로그인 한 사용자가 같을 경우
+							outReply += "<input type='button' value='삭제' onclick=\"removeReply("+jsonTemp.num
+									+", '"+jsonTemp.writer+"',this)\" class='btn btn-danger btn-sm'/> ";
+						}//end if
+						+"</div>";
+					outReply += "</div>";
+					outReply += "</div>";
+				});//each
+					outReply += "</div>";
+				
+				$("#replyContentDiv").html(outReply);
+			}//end if
+		}
+	});//ajax
+}//searchReply
+
+function removeReply(num, writer, divElement) {
+	//alert(num  + ", " + writer);
+	if(!confirm("댓글을 삭제하시겠습니까?")){
+		return;
+	}
+	
+	var param = {num: num, writer: writer };
+	
+	$.ajax({
+		url:"reply_remove.jsp",
+		type:"get",
+		data:param,
+		dataType:"json",
+		error:function(xhr){
+			console.log(xhr.status);
+		},
+		success:function (jsonObj){
+			//alert(jsonObj);
+			
+			var msg = "댓글이 정상적으로 삭제되지 않았습니디."
+			if(jsonObj.cnt != 0){
+				msg = "댓글이 정상적으로 삭제되었습니다."
+				$(divElement).parent().parent().remove();
+				$("#replyMenu").html("닫기(<span title='댓글의 수'>"+rowCnt()+"</span>)");
+			}
+			alert(msg);
+		}
+	});//ajax
+	
+}//removeReply
 
 function movePage(flag){
 	//<form>태그의 action을 변경 document.폼이름.action="변경할 action"
@@ -193,7 +362,7 @@ function chkNull(){
 	<td style="width: 80px">ip</td>	
 	<td>
 	<c:out value="${ bVO.ip }"/>
-	<input type="hidden" name="num" value="${ bVO.num }"/>
+	<input type="hidden" name="num" id="num" value="${ bVO.num }"/>
 	<input type="hidden" name="currentPage" value="${ param.currentPage }"/>
 	</td>
 	</tr>
@@ -209,6 +378,21 @@ function chkNull(){
 	</table>
 	</form>
 </div>
+<div id="replyWriteDiv">
+<strong>댓글작성</strong><br>
+<label>내용</label>
+<input type="text" name="replyContent" id="replyContent" style="width: 300px">
+<label>작성자</label>
+<input type="text" name="replyWriter" name="replyWriter" style="width: 80px" value="${ userData.id }" readonly="readonly">
+<input type="button" name="btnReplyWrite" id="btnReplyWrite" class="btn btn-success btn-sm" value="댓글작성">
+</div>
+<div id="replyReadDiv">
+<div id="replyMenuDiv">
+<span id="replyMenu">열기</span>
+</div>
+<div id="replyContentDiv"></div>
+</div>
+
 </div>
 </div>
 </body>
