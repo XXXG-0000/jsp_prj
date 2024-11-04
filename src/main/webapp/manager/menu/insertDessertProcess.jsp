@@ -21,7 +21,7 @@
 	try {
 		DessertIceDAO diDAO = DessertIceDAO.getInstance();
 		diDAO.insertItem(pVO);			// item 테이블에 insert
-		diDAO.insertIngredient(iVO);		//ingredient 테이블에 insert
+		//diDAO.insertIngredient(iVO);		//ingredient 테이블에 insert
 		insertFlag = true;
 		pVO.setCategorieName("디저트");
 	} catch(SQLException se){

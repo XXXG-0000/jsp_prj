@@ -70,6 +70,7 @@
 			padding: 12px;
 			text-align: left;
 		}
+		
         #none{display: none}
     </style>
     <script>
@@ -94,8 +95,8 @@
 
         function chkNull() {
             var keyword = $("#keyword").val();
-            if(keyword.length<4){
-                alert("검색 키워드는 3글자 이상 입력하셔야 합니다.");
+            if(keyword.length<1){
+                alert("검색 키워드는 1글자 이상 입력하셔야 합니다.");
                 return;
             }
             $("#searchFrm").submit();
@@ -122,13 +123,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectDrinkList.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectCoffeeList.jsp">
                                 <svg class="bi"><use xlink:href="#cup-hot"/></svg>
                                 음료 관리
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectDessertList.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectCoffeeList.jsp">
                             	<svg class="bi"><use xlink:href="#cake"/></svg>
                                 디저트&아이스크림 관리
                             </a>
@@ -205,6 +206,9 @@
     // 그걸 sVO에 담는다.
     sVO.setStartNum(startNum);
     sVO.setEndNum(endNum);
+    sVO.setCurrentPage(currentPage);
+    sVO.setTotalPage(totalPage);
+    sVO.setTotalCount(totalCount);
 
     List<CustomerVO> listCustomer = null;
     try {
@@ -213,15 +217,17 @@
     } catch (SQLException e) {
         e.printStackTrace();
     }
+    pageContext.setAttribute("startNum", startNum);
+    pageContext.setAttribute("endNum", endNum);
+    pageContext.setAttribute("currentPage", currentPage);
     pageContext.setAttribute("totalPage", totalPage);
     pageContext.setAttribute("totalCount", totalCount);
     pageContext.setAttribute("listCustomer", listCustomer);
-    pageContext.setAttribute("currentPage", currentPage);
     pageContext.setAttribute("pageScale", pageScale);
 %>
             <div class="search-bar">
                 <form action="list_customer.jsp" method="get" name="searchFrm" id="searchFrm">
-      	            <select id="field" name="field">
+      	            <select id="field" name="field" style="width: 100px; height: 44px;">
 			             <option value="0" >ID</option>
 			             <option value="1">이름</option>
 		            </select>
@@ -231,7 +237,7 @@
                 </form>
            </div>
 
-            <div id="listCustomerDiv" style="width: 900px; height: 540px">
+            <div id="listCustomerDiv" style="width: 900px;">
                 <table>
                     <thead>
                         <tr>
@@ -250,6 +256,11 @@
                             <a href="http://localhost/jsp_prj/manager/dashboard/dashboard.jsp">돌아가기</a>
                         </td>
                     </c:if>
+                    
+                    <c:if test="${ not empty param.keyword }"> <!-- 파라메터 변수가 있을 경우 -->
+					<c:set var="searchParam" value="&keyword=${ param.keyword }"/>
+					</c:if>
+                    
                     <tbody>
 
                     <c:forEach var="cVO" items="${listCustomer}" varStatus="i">
@@ -285,15 +296,16 @@
                     endPage=totalPage;
                 }
             %>
-            <div id="pagination">
+            <!-- pagination proto start -->
+            <%-- <div id="pagination">
                 <c:if test="${not empty listCustomer}">
                     <ul class="pagination justify-content-center">
                         <c:choose>
-                            <%-- 검색 결과가 있는 경우 --%>
+                            검색 결과가 있는 경우
                             <c:when test="${not empty param.keyword}">
                                 <c:choose>
                                     <c:when test="${totalCount < pageScale}">
-                                        <%-- 검색 결과가 10개 미만이면 [1]만 표시 --%>
+                                        검색 결과가 10개 미만이면 [1]만 표시
                                         <li class="page-item active">
                                             <a class="page-link" href="list_customer.jsp?currentPage=1&keyword=${param.keyword}&field=${param.field}">1</a>
                                         </li>
@@ -309,7 +321,7 @@
                                     </c:otherwise>
                                 </c:choose>
                             </c:when>
-                            <%-- 전체 리스트인 경우 --%>
+                            전체 리스트인 경우
                             <c:otherwise>
                                 <c:forEach var="i" begin="1" end="${totalPage}" step="1">
                                     <li class="page-item ${i == currentPage ? 'active' : ''}">
@@ -322,7 +334,14 @@
                         </c:choose>
                     </ul>
                 </c:if>
-            </div>
+            </div> --%>
+            <!-- pagination proto end -->
+            <!-- pagination -->
+			<ul class="pagination justify-content-center">
+			<% sVO.setUrl("list_customer.jsp"); %>
+			<%= new CustomerUtil().pagination(sVO) %>
+			</ul>
+			<!-- pagination end -->
         </main>
     </div>
 </div>

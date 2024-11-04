@@ -400,7 +400,7 @@
 				    <label><input type="radio" name="ingredientFlag" value="Y" onclick="toggleTable(true)" checked="checked"> 제공</label>
 				    <label><input type="radio" name="ingredientFlag" value="N" onclick="toggleTable(false)"> 미제공</label>
 		
-				    <table id="ingredientTable">
+				   <!-- <table id="ingredientTable">
 				        <tr>
 				            <th>성분</th>
 				            <th>함량</th>
@@ -429,7 +429,7 @@
 				            <td>단백질</td>
 				            <td><input type="text" name="protein" value="9"></td>
 				        </tr>
-				    </table>
+				    </table> -->
 				</fieldset>
 		
 		            <!-- 제출 버튼 -->

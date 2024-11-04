@@ -216,8 +216,12 @@
 	<script type="text/javascript">
     $(function(){
      	$("#confirm").click(function(){
-			var url="http://localhost/jsp_prj/manager_v1.1/menu/selectCoffeeList.jsp?currentPage=${ param.currentPage }"
+			var url="http://localhost/jsp_prj/manager/menu/selectCoffeeList.jsp?currentPage=${ param.currentPage }"
 					
+			// param.currentPage: input type hidden 사용해 넘긴다.
+			if(${ not empty param.keyword }){ // 키워드가 있을 경우
+				url += "&keyword=${ param.keyword }"			
+			}// end if		
 			location.href = url;
      	});//click
      	

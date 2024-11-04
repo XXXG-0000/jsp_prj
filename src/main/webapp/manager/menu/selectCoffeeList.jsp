@@ -9,7 +9,7 @@
     info="음료 관리"
     %>
 <%--관리자 세션을 검증하는 jsp include--%>
-<jsp:include page="../common/jsp/manager_session_chk.jsp"/>
+<%-- <jsp:include page="../common/jsp/manager_session_chk.jsp"/> --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!doctype html>

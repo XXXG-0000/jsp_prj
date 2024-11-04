@@ -311,8 +311,17 @@ public class BoardDAO {
 			conn = dbCon.getConn();
 			//쿼리문 생성객체 얻기
 			StringBuilder deleteBoard = new StringBuilder();
+			/*
+			 * 댓글이 존재하지 않으면 삭제
+			 * 모든 댓글의 소유권이 작성자에게 있으면 테이블 생성시 on delete cascade 옵션 사용
+			 * deleteBoard .append("	delete from	board			")
+			 * .append("	where	num=? and writer=?	") ;ㄴ
+			 */
+			
+			//댓글의 소유권이 원글 작성자에게 없을 때 update 수행
 			deleteBoard
-			.append("	delete from	board			")
+			.append("	update board	")
+			.append("	set subject='삭제된 글입니다.', content='사용자에 의해 삭제된 글입니다.', writer='N/A'	")
 			.append("	where	num=? and writer=?	")
 			;
 			
@@ -331,5 +340,7 @@ public class BoardDAO {
 		
 		return rowCnt;
 	}//updateBoard
+	
+	
 	
 }

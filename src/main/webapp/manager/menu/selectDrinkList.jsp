@@ -291,6 +291,11 @@ function loginMove(){
         	</td>
         </tr>
         </c:if>
+        
+        <c:if test="${ not empty param.keyword }"> <!-- 파라메터 변수가 있을 경우 -->
+		<c:set var="searchParam" value="&keyword=${ param.keyword }"/>
+		</c:if>
+		        
         <c:forEach var="pVO" items="${ listBoard }" varStatus="i">
         <tr>
         	<!-- var.VO의 변수명 -->

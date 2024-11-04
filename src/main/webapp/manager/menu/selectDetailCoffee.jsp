@@ -227,10 +227,12 @@
      	});//click
      	
     	$("#answer").click(function(){
+            event.preventDefault();
  			movePage('u');
 		});//click
      	
     	$("#cancel").click(function(){
+            event.preventDefault();
 			movePage('d');
     	});//click
     });//ready
@@ -461,7 +463,7 @@
             <label for="drink-image">이미지</label>
             <div class="image-upload">
                 <img id="preview" src="${ pVO.image }" alt="이미지 미리보기" style="">
-                <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+                <input type="file" id="image" name="image" accept="image/*" "${ pVO.image }" onchange="previewImage(event)">
             </div>
 
 			<!-- 카테고리 구분 -->

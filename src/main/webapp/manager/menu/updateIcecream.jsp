@@ -22,7 +22,7 @@
 <%
 	DessertIceDAO diDAO = DessertIceDAO.getInstance();
 	int cnt1 = 0;//product
-	int cnt2 = 0;//ingredient
+	//int cnt2 = 0;//ingredient
 	int cnt3 = 0;//icecream option
 	
 	//product
@@ -34,14 +34,14 @@
 		se.printStackTrace();
 	}// end catch
 
-	//ingredient
+	/* //ingredient
 	try{
 		cnt2 = diDAO.updateIngredient(iVO);		
 	} catch(SQLException se){
 		cnt2 = -1;
 		System.out.println("상품 영양 정보 수정 과정에서 문제 발생!");
 		se.printStackTrace();
-	}// end catch
+	}// end catch */
 
 	//icecream option
 	try{
@@ -53,7 +53,7 @@
 	}// end catch
 	
 	pageContext.setAttribute("cnt1", cnt1);
-	pageContext.setAttribute("cnt2", cnt2);
+	//pageContext.setAttribute("cnt2", cnt2);
 	pageContext.setAttribute("cnt3", cnt3);
 %>
 
@@ -91,20 +91,32 @@
 	<script type="text/javascript">
 	var msg = "DB에서 문제가 발생했습니다." // cnt = -1
 	var cnt1 = ${ cnt1 };//product
-	var cnt2 = ${ cnt2 };//ingredient
+	//var cnt2 = ${ cnt2 };//ingredient
 	var cnt3 = ${ cnt3 };//option
 		
-	if(cnt1 == 0 || cnt2 == 0 || cnt3 == 0) {
+/* 	if(cnt1 == 0 || cnt2 == 0 || cnt3 == 0) {
 		msg = "상품 정보가 외부에서 임의로 편집되었습니다.";
 	}// end if
 	
 	if(cnt1 == 1 && cnt2 == 1 && cnt3 == 1){
 		msg = "상품 정보가 수정되었습니다.";
+	}//end if */
+	if(cnt1 == 0 || cnt3 == 0) {
+		msg = "상품 정보가 외부에서 임의로 편집되었습니다.";
+	}// end if
+	
+	if(cnt1 == 1 && cnt3 == 1){
+		msg = "상품 정보가 수정되었습니다.";
 	}//end if
 	
 	alert(msg);
 	
-	if( (cnt1 == 0 || cnt2 == 0 || cnt3 == 0) || (cnt1 == -1 || cnt2 == -1 || cnt3 == -1) ){
+/* 	if( (cnt1 == 0 || cnt2 == 0 || cnt3 == 0) || (cnt1 == -1 || cnt2 == -1 || cnt3 == -1) ){
+		history.back();
+	} else {
+		location.href="selectIcecreamList.jsp?currentPage=${ param.currentPage }";
+	} */
+	if( (cnt1 == 0 || cnt3 == 0) || (cnt1 == -1 || cnt3 == -1) ){
 		history.back();
 	} else {
 		location.href="selectIcecreamList.jsp?currentPage=${ param.currentPage }";

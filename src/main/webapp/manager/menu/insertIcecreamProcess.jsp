@@ -25,7 +25,7 @@
 	try {
 		DessertIceDAO diDAO = DessertIceDAO.getInstance();
 		diDAO.insertItem(pVO);			// item 테이블에 insert
-		diDAO.insertIngredient(iVO);		//ingredient 테이블에 insert
+		//diDAO.insertIngredient(iVO);		//ingredient 테이블에 insert
 		diDAO.insertIcecreamOption(ioVO);		//icecream_option 테이블에 insert
 		insertFlag = true;
 		pVO.setCategorieName("아이스크림");

@@ -18,7 +18,8 @@
 <jsp:setProperty name="pVO" property="*"/>
 <jsp:setProperty name="oVO" property="*"/>
 <jsp:setProperty name="iVO" property="*"/>
-<%
+<%= pVO %>
+<%-- <%
 	DrinkDAO dDAO = DrinkDAO.getInstance();
 	int cnt1 = 0;//product
 	int cnt2 = 0;//option
@@ -54,7 +55,7 @@
 	pageContext.setAttribute("cnt1", cnt1);
 	pageContext.setAttribute("cnt2", cnt2);
 	pageContext.setAttribute("cnt3", cnt3);
-%>
+%> --%>
 
 <!doctype html>
 <html lang="en" data-bs-theme="auto">

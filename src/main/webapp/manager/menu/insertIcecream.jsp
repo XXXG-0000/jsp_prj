@@ -429,42 +429,42 @@
 					</fieldset>
 		
 		            <!-- 영양 성분표 제공 여부 -->
-		                   <fieldset>
-		    <legend>영양 성분표 제공 여부:</legend>
-		    <label><input type="radio" name="ingredientFlag" value="Y" onclick="toggleTable(true)" checked="checked"> 제공</label>
-		    <label><input type="radio" name="ingredientFlag" value="N" onclick="toggleTable(false)"> 미제공</label>
-		
-		    <table id="ingredientTable">
-		        <tr>
-		            <th>성분</th>
-		            <th>함량</th>
-		        </tr>
-		        <tr>
-		            <td>카페인</td>
-		            <td><input type="text" name="caffeine" value="0"></td>
-		        </tr>
-		        <tr>
-		            <td>칼로리</td>
-		            <td><input type="text" name="calorie" value="333"></td>
-		        </tr>
-		        <tr>
-		            <td>나트륨</td>
-		            <td><input type="text" name="natrium" value="70"></td>
-		        </tr>
-		        <tr>
-		            <td>당류</td>
-		            <td><input type="text" name="sugar" value="20"></td>
-		        </tr>
-		        <tr>
-		            <td>포화지방</td>
-		            <td><input type="text" name="fattyAcid" value="17"></td>
-		        </tr>
-		        <tr>
-		            <td>단백질</td>
-		            <td><input type="text" name="protein" value="4"></td>
-		        </tr>
-		    </table>
-		</fieldset>
+				    <fieldset>
+				    <legend>영양 성분표 제공 여부:</legend>
+				    <label><input type="radio" name="ingredientFlag" value="Y" onclick="toggleTable(true)"> 제공</label>
+				    <label><input type="radio" name="ingredientFlag" value="N" onclick="toggleTable(false)" checked="checked"> 미제공</label>
+				
+				    <!-- <table id="ingredientTable">
+				        <tr>
+				            <th>성분</th>
+				            <th>함량</th>
+				        </tr>
+				        <tr>
+				            <td>카페인</td>
+				            <td><input type="text" name="caffeine" value="0"></td>
+				        </tr>
+				        <tr>
+				            <td>칼로리</td>
+				            <td><input type="text" name="calorie" value="333"></td>
+				        </tr>
+				        <tr>
+				            <td>나트륨</td>
+				            <td><input type="text" name="natrium" value="70"></td>
+				        </tr>
+				        <tr>
+				            <td>당류</td>
+				            <td><input type="text" name="sugar" value="20"></td>
+				        </tr>
+				        <tr>
+				            <td>포화지방</td>
+				            <td><input type="text" name="fattyAcid" value="17"></td>
+				        </tr>
+				        <tr>
+				            <td>단백질</td>
+				            <td><input type="text" name="protein" value="4"></td>
+				        </tr>
+				    </table> -->
+					</fieldset>
 		
 		            <!-- 제출 버튼 -->
 		            <button type="button" class="btn btn-primary" id="btnInsert">추가 메뉴 저장</button>

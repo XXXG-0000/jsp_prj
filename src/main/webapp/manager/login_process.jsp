@@ -38,14 +38,31 @@
         if("".equals(managerId) || managerId.isEmpty()){%>
         <script>
             alert("로그인 실패! 다시 시도해주세요.");
-            location.href = "http://localhost/jsp_prj/manager_v1.2/index.jsp";
+            location.href = "http://localhost/jsp_prj/manager/index.jsp";
         </script>
     <%
         }
-        // 세션에 두고두고 저장
+        // 로그인에 성공했으니 세션에 두고두고 저장
+        // 테스트 코드
+        session.setMaxInactiveInterval(20);  // 30분 = 1800초
         session.setAttribute("managerId", managerId);
-        response.sendRedirect("http://localhost/jsp_prj/manager/dashboard/dashboard.jsp");
+        %>
+
+<script>
+    // 저장된 url 이 있는지 확인 스크립트
+    const returnUrl = localStorage.getItem("returnUrl");
+    if (returnUrl) {
+        //저장된 url이 있다? 해당 페이지로 이동
+        localStorage.removeItem("returnUrl");
+        location.href = returnUrl;
+    }else {
+        // 없으면 그냥 대시보드 페이지로..
+        location.href="http://localhost/jsp_prj/manager/dashboard/dashboard.jsp"
+    }
+</script>
+        <%
     } catch (SQLException e) {
+
         e.printStackTrace();
     } %>
 </body>
