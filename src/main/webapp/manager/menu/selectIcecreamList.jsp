@@ -290,11 +290,16 @@ function loginMove(){
         	</td>
         </tr>
         </c:if>
+        
+        <c:if test="${ not empty param.keyword }"> <!-- 파라메터 변수가 있을 경우 -->
+		<c:set var="searchParam" value="&keyword=${ param.keyword }"/>
+		</c:if>
+        
         <c:forEach var="pVO" items="${ listBoard }" varStatus="i">
         <tr>
         	<!-- var.VO의 변수명 -->
         	<td><c:out value="${ pVO.itemNum }"/></td>
-        	<td><a href="selectDetailIcecream.jsp?itemNum=${ pVO.itemNum }&currentPage=${ currentPage }">
+        	<td><a href="selectDetailIcecream.jsp?itemNum=${ pVO.itemNum }&currentPage=${ currentPage }${ searchParam }">
         	<c:out value="${ pVO.iNameK }"/></a></td>
         	<td><c:out value="${ pVO.price }"/></td>
         	<td><c:out value="${ pVO.categorieName }"/></td>

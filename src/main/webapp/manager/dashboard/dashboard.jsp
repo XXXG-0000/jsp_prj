@@ -1,13 +1,11 @@
-<%@ page import="project.manager.dashboard.DashboardDAO" %>
-<%@ page import="java.sql.SQLException" %>
-<%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"
          info="대시보드 페이지"
     %>
 <%--관리자 세션을 검증하는 jsp include--%>
 <%@ include file="../common/jsp/manager_session_chk.jsp"%>
-
 <!doctype html>
 <html lang="kor" data-bs-theme="auto">
 <head>
@@ -75,6 +73,46 @@
     <!-- jQuery CDN 시작 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
+    <!-- dashboard.js 삽입-->
+    <script src="../common/js/dashboard.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#exportBtn").click(function () {
+                if (confirm("엑셀 파일로 추출하시겠습니까?")){
+                    extraction();
+                    return;
+                }
+            });
+        });
+        
+        function extraction() {
+            $.ajax({
+                url: "dashboard_export.jsp",
+                method: 'GET',
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function(data, status, xhr) {
+                    const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    const fileName = xhr.getResponseHeader('Content-Disposition')?.split('filename=')[1] || 'dashboard_report.xls';
+
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                },
+                error: function(xhr) {
+                    alert('엑셀 파일 다운로드 중 오류가 발생했습니다.\n' + xhr.status);
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 <jsp:include page="../common/svg.jsp"/> <!-- svg -->
@@ -127,7 +165,7 @@
                     <hr class="my-3">
                     <ul class="nav flex-column mb-auto">
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="#">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/logout.jsp">
                                 <svg class="bi"><use xlink:href="#door-closed"/></svg>
                                 로그아웃
                             </a>
@@ -136,17 +174,19 @@
                 </div>
             </div>
         </div>
-
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group me-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">공유</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary">추출</button>
+                    <div class="btn-group me-1">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="exportBtn" name="exportBtn">추출</button>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-1">
+                    <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
                         <i class="bi bi-calendar-date"></i>
-                        today
+                        <%
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            Date date = new Date();
+                            out.print(sdf.format(date));
+                        %>
                     </button>
                 </div>
             </div>
@@ -175,170 +215,5 @@
         </main>
     </div>
 </div>
-<%
-    DashboardDAO dDAO = DashboardDAO.getInstance();
-
-    int[] drinkSales =  null;
-    int[] dessertSales = null;
-    int[] join = null;
-    int[] withdraw = null;
-    int[] voc = null;
-    int[] total = null;
-    try {
-        drinkSales = dDAO.selectDrinkSales();
-        dessertSales = dDAO.selectDessertSales();
-        join = dDAO.selectJoinCustomer();
-        withdraw =dDAO.selectWithdrawCustomer();
-        voc = dDAO.selectVoc();
-        total = dDAO.selectSales();
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    pageContext.setAttribute("selectDrinkSales", drinkSales);
-    pageContext.setAttribute("selectDessertSales", dessertSales);
-    pageContext.setAttribute("join",join);
-    pageContext.setAttribute("withdraw", withdraw);
-    pageContext.setAttribute("voc", voc);
-    pageContext.setAttribute("total", total);
-%>
-
-<script>
-    // 날짜 sysdate -n 의 데이터를 가져온다.
-    const days = ['월', '화', '수', '목', '금', '토', '일'];
-
-    // 실제 데이터 삽입 구간
-    const data = {
-        음료: [${selectDrinkSales[6]}, ${selectDrinkSales[5]}, ${selectDrinkSales[4]},
-            ${selectDrinkSales[3]}, ${selectDrinkSales[2]}, ${selectDrinkSales[1]},
-            ${selectDrinkSales[0]}],
-        디저트: [${selectDessertSales[6]}, ${selectDessertSales[5]}, ${selectDessertSales[4]},
-            ${selectDessertSales[3]}, ${selectDessertSales[2]}, ${selectDessertSales[1]},
-            ${selectDessertSales[0]}],
-        가입: [${join[6]}, ${join[5]}, ${join[4]},
-            ${join[3]}, ${join[2]}, ${join[1]},
-            ${join[0]}],
-        탈퇴: [${withdraw[6]}, ${withdraw[5]}, ${withdraw[4]},
-            ${withdraw[3]}, ${withdraw[2]}, ${withdraw[1]},
-            ${withdraw[0]}],
-        voc: [${voc[6]}, ${voc[5]}, ${voc[4]},
-            ${voc[3]}, ${voc[2]}, ${voc[1]},
-            ${voc[0]}],
-        매출: [${total[6]}, ${total[5]}, ${total[4]},
-            ${total[3]}, ${total[2]}, ${total[1]},
-            ${total[0]}]
-    };
-
-    // 차트 1: 음료 판매량
-    new Chart(document.getElementById('chart1'), {
-        type: 'bar',
-        data: {
-            labels: days,
-            datasets: [{
-                   label: '음료/커피 판매량',
-                    data: data.음료,
-                    backgroundColor: 'rgba(50, 99, 132, 0.5)',
-                },
-                {
-                    label: '디저트/아이스크림 판매량',
-                    data:data.디저트,
-                    backgroundColor: 'rgba(70, 190, 132, 0.5)',
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                title: {
-                    display: true,
-                    text: '일일 판매량(건수)'
-                }
-            }
-        }
-    });
-
-    // 차트 2: 디저트 판매량
-    new Chart(document.getElementById('chart2'), {
-        type: 'line',
-        data: {
-            labels: days,
-            datasets: [{
-                label: '총 매출',
-                data: data.매출,
-                borderColor: 'rgba(153, 102, 255, 1)',
-                tension: 0.1
-            }
-
-
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                title: {
-                    display: true,
-                    text: '일일 총 매출량 '
-                }
-            }
-        }
-    });
-
-    // 차트 3: 회원 가입 수
-    new Chart(document.getElementById('chart3'), {
-        type: 'bar',
-        data: {
-            labels: days,
-            datasets: [
-                {
-                label: '신규 회원 수',
-                data: data.가입,
-                backgroundColor: 'rgba(75, 192, 192, 0.5)'
-                },
-                {
-                    label: '탈퇴 회원 수',
-                    data: data.탈퇴,
-                    backgroundColor: 'rgb(255, 99, 132,0.5)',
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                title: {
-                    display: true,
-                    text: '일일 신규 회원 및 탈퇴 회원'
-                }
-            }
-        }
-    });
-
-    // 차트 4: 총 매출
-    new Chart(document.getElementById('chart4'), {
-        type: 'line',
-        data: {
-            labels: days,
-            datasets: [{
-                label: '고객의 소리',
-                data: data.voc,
-                borderColor: 'rgba(54, 162, 235, 1)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                title: {
-                    display: true,
-                    text: '일일 고객의 소리(건수)'
-                }
-            }
-        }
-    });
-</script>
-
 </body>
 </html>

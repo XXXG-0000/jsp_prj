@@ -34,31 +34,30 @@ public class ManagerDAO {
     * managerVO를 전달받아 조희
     *
     */
-    public String selectManager(ManagerVO managerVO) throws SQLException {
-        String SelectResult = "";
-        DbConnection dbConnection = DbConnection.getInstance();
-        PreparedStatement preparedStatement = null;
-        Connection connection = null;
-        ResultSet resultSet = null;
+    public boolean selectManager(ManagerVO mVO) throws SQLException {
+        boolean loginFlag = false;
+        
+        DbConnection dbCon = DbConnection.getInstance();
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rs = null;
 
         try {
-            connection = dbConnection.getConn();
-            String sql = "SELECT manager_id FROM MANAGER WHERE manager_id=? and manager_pass=?";
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, managerVO.getManagerId()); // 폼에서 전달된 매니저 ID 사용
-            preparedStatement.setString(2, managerVO.getManagerPass());
+            conn = dbCon.getConn();
+            String sql = "SELECT * FROM MANAGER WHERE manager_id=? and manager_pass=?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, mVO.getManagerId()); // 폼에서 전달된 매니저 ID 사용
+            pstmt.setString(2, mVO.getManagerPass());
 
             // 아이디로 조회된 결과가 있으면
-            resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                SelectResult = resultSet.getString("manager_id");
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                loginFlag = true;
             }
         } finally {
-            dbConnection.dbClose(null, preparedStatement, connection);
+            dbCon.dbClose(rs, pstmt, conn);
         }
-        return SelectResult;
+        return loginFlag;
     }
-
-
 
 } // ManagerDAO 끝 

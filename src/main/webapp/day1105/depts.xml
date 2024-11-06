@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<depts>
+  <dept>
+    <deptno status="R">10</deptno>
+    <dname>ACCOUNTING</dname>
+    <loc>NEW YORK</loc>
+  </dept>
+  <dept>
+    <deptno status="R">20</deptno>
+    <dname>RESEARCH</dname>
+    <loc>DALLAS</loc>
+  </dept>
+  <dept>
+    <deptno status="D">30</deptno>
+    <dname>판촉부</dname>
+    <loc>서울</loc>
+  </dept>
+  <dept>
+    <deptno status="R">40</deptno>
+    <dname>OPERATIONS</dname>
+    <loc>BOSTON</loc>
+  </dept>
+</depts>

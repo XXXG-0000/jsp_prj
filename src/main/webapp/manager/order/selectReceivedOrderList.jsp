@@ -108,24 +108,8 @@
     <script type="text/javascript">
 	    // 탭을 보여주는 함수
 	    $(function(){
-			$("#btnradio1").click(function(){
-				showTab('not-received');
-			});//click
-			
-			$("#btnradio2").click(function(){
-				showTab('received');
-			});//click
-			
-			$(".orderCode").click(function(){
-				openPopup();
-			});//click
+
 	    });//ready
-	    
-	    function showTab(tab) {
-	        document.getElementById('received').classList.add('hidden');
-	        document.getElementById('not-received').classList.add('hidden');
-	        document.getElementById(tab).classList.remove('hidden');
-	    }
 	
 	    // 테이블 정렬 함수
 	    let sortDirection = true; // true는 오름차순, false는 내림차순
@@ -307,10 +291,6 @@
 	</div>
 
     <!-- 탭 메뉴 -->
-<!--     <div class="tab-container">
-        <div class="tab" onclick="showTab('received')">수령 완료</div>
-        <div class="tab" onclick="showTab('not-received')">미수령</div>
-    </div> -->
     
 	<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="margin-bottom: 30px;">
 	  <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off">

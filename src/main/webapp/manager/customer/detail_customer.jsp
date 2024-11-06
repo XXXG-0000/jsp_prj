@@ -1,10 +1,12 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"  trimDirectiveWhitespaces="true" %>
 <%@ page import="project.manager.customer.CustomerDAO" %>
 <%@ page import="java.sql.SQLException" %>
 <%@ page import="project.manager.customer.Grade"%>
 <%@ page import="project.manager.customer.CustomerVO" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="kr.co.sist.chipher.DataDecryption" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <%--관리자 세션을 검증하는 jsp include--%>
 <%@ include file="../common/jsp/manager_session_chk.jsp"%>
 <%
@@ -20,8 +22,11 @@
         e.printStackTrace();
     }
 
+    DataDecryption dd = new DataDecryption("abcdef0123456789");
     pageContext.setAttribute("cVO", cVO);
     pageContext.setAttribute("Grade", Grade.class);
+    pageContext.setAttribute("dd", dd);
+
 %>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -67,11 +72,6 @@
                 font-size: 3.5rem;
             }
         }
-
-/*         .container-fluid {
-			width: 100%;
-		    height: 100%;
-		} */
 
         .bi {
             vertical-align: -.125em;
@@ -121,7 +121,7 @@
             return;
         }
         if(flag =='d'){
-           let actionText = "${cVO.cusFlag}" === 'Y' ? '비활동' : '활동';
+           let actionText = "${cVO.cusFlag}" === 'Y' ? '활동' : '비활동';
 
            if(confirm(`[ ${cVO.cusId} ] 유저를 정말 `+actionText+ `으로 변경하시겠습니까?`)){
                document.customerFrm.action="http://localhost/jsp_prj/manager/customer/delete_customer.jsp?cusId=<%=cusId%>";
@@ -133,7 +133,6 @@
     }
 
     </script>
-
 </head>
 <body>
 <jsp:include page="../common/svg.jsp"/> <!-- svg -->
@@ -143,7 +142,6 @@
     <div class="row">
         <div class="border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary" style="height: 900px">
             <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
-
                 <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
                     <ul class="nav nav-pills flex-column">
                         <li class="nav-item">
@@ -153,7 +151,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/getListDrink.jsp">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/menu/selectCoffeeList.jsp">
                                 <svg class="bi"><use xlink:href="#cup-hot"/></svg>
                                 음료 관리
                             </a>
@@ -183,11 +181,10 @@
                             </a>
                         </li>
                     </ul>
-
                     <hr class="my-3">
                     <ul class="nav flex-column mb-auto">
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="#">
+                            <a class="nav-link d-flex align-items-center gap-2" href="http://localhost/jsp_prj/manager/logout.jsp">
                                 <svg class="bi"><use xlink:href="#door-closed"/></svg>
                                 로그아웃
                             </a>
@@ -207,10 +204,10 @@
                 <input type="hidden" id="currentPage" value="${param.currentPage}"/>
 
                 <label for="name">이름:</label>
-                <input type="text" id="name" name="name" value="${cVO.name}" required>
+                <input type="text" id="name" name="name" value="${dd.decrypt(cVO.name)}" required>
 
                 <label for="email">이메일:</label>
-                <input type="email" id="email" name="email" value="${cVO.email}" required>
+                <input type="email" id="email" name="email" value="${dd.decrypt(cVO.email)}" required>
 
                 <label for="inputDate">가입일:</label>
                 <input type="date" id="inputDate" value="<fmt:formatDate value='${cVO.inputDate}' pattern='yyyy-MM-dd' />" readonly>
@@ -223,19 +220,18 @@
                         </option>
                     </c:forEach>
                 </select>
-
                 <input type="radio" id="status1" name="cusFlag" value="Y" style="text-align: left; width: 5%"  ${cVO.cusFlag == 'Y'? 'checked': 'disabled'}>활동
                 <input type="radio" id="status2" name="cusFlag" value="N" style="text-align: left; width: 5%" ${cVO.cusFlag == 'N'? 'checked': 'disabled'}>비활동
                 <input type="hidden" id="cusFlag" name="Flag" value="${cVO.cusFlag}">
 
                 <label for="phone">전화번호:</label>
-                <input type="tel" id="phone" name="phone" value="${cVO.phone}" required>
+                <input type="tel" id="phone" name="phone" value="${dd.decrypt(cVO.phone)}" required>
 
                 <div style="text-align: center;">
                     <button class="confirm" id="confirm" >확인</button>
                     <button class="answer" id="answer">수정</button>
                     <button class="cancel" id="cancel">
-                        ${cVO.cusFlag == 'Y' ? '비활동' : '활동'}
+                        ${cVO.cusFlag == 'N' ? '비활동' : '활동'}
                     </button>
                 </div>
             </form>

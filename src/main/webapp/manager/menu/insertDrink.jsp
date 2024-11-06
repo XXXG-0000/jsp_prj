@@ -192,7 +192,70 @@
     	$("#btnInsert").click(function(){
 			chkNull();
 		});//click
+		
+		$("#image").change(function(evt){
+			preview(evt);
+		})//change
+		
+		$("#btnUpload").click(function(){
+			ajaxFileUpload();
+		});//click
+		
     });//ready
+    
+    function ajaxFileUpload(){
+    	if($("#image").val() == ""){
+    		alert("이미지를 선택해주세요");
+    		return;
+    	}
+    	
+    	//1. form 태그 얻기 // formControl의 값을 AJAX로 전달
+    	var form=$("#insertFrm")[0];
+    	alert(form);//object HtmlInputElement
+    	
+    	//2. HTML Form Control의 값을 data 속성으로 전달하기 위해 생성
+    	var formData = new FormData(form);
+    	
+    	$.ajax({
+    		url:"upload_img_process.jsp",
+    		contentType: false,
+    		processData: false,
+    		data: formData,
+    		type: "post",
+    		dataType: "json",
+    		error:function(xhr){
+    			console.log(xhr.status);
+    			alert("이미지 업로드 실패");
+    		},
+    		success:function(jsonObj){
+    			//alert(jsonObj.uploadflag)//false
+    			var msg="이미지 업로드 실패";
+    			if(!jsonObj.uploadflag){
+    				msg="이미지가 업로드 되었습니다."
+    			}
+    			alert(msg);
+    		}
+    	});
+    }
+    
+    function preview(evt){
+    	if($("#image").val() == ""){
+    		alert("이미지를 선택해주세요");
+    		return;
+    	}
+    	
+    	//1. 파일 컴포넌트 얻기
+    	var file = evt.target.files[0];
+    	//2. 스트림 생성
+    	var reader = new FileReader();
+    	//3. FileReader객체의 onload 이벤트 핸들러를 설정
+    	reader.onload = function(evt2){
+    		$("#preview").prop("src",evt2.target.result);
+    	}
+    	
+    	//4. 파일에서 읽어들여 실제 img 태그에 출력(미리보기)
+    	reader.readAsDataURL(file);
+    }
     
     function chkNull(){
 		// 이름 체크
@@ -298,7 +361,7 @@
 		$("#insertFrm").submit();
     }
     
- 	// 이미지 미리보기 기능
+/*  	// 이미지 미리보기 기능
     function previewImage(event) {
         const reader = new FileReader();
         reader.onload = function(){
@@ -307,7 +370,7 @@
             imagePreview.style.display = 'block';
         }
         reader.readAsDataURL(event.target.files[0]);
-    }
+    } */
     </script>
     
 	<script type="text/javascript">
@@ -402,7 +465,8 @@
 		            <label for="drink-image">이미지</label>
 		            <div class="image-upload">
 		                <img id="preview" src="#" alt="이미지 미리보기" style="display: none;" title="새 파일">
-		                <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+		                <input type="file" id="image" name="image" accept="image/*" style="border: none;">
+		                <input type="button" value="이미지 업로드" id="btnUpload" class="btn btn-sm btn-success" style="margin-bottom: 20px;"/>
 		            </div>
 		
 		            <!-- 카테고리 구분 -->

@@ -3,18 +3,27 @@
 <%@ page import="project.manager.customer.Grade"%>
 <%@ page import="project.manager.customer.CustomerDAO" %>
 <%@ page import="java.sql.SQLException" %>
+<%@ page import="kr.co.sist.chipher.DataEncryption" %>
 <jsp:include page="../common/jsp/manager_session_chk.jsp"/>
-
 <jsp:useBean id="cVO" scope="page" class="project.manager.customer.CustomerVO"/>
 
 <%
     // 모든 파라미터 수동 설정
-    cVO.setName(request.getParameter("name"));
-    cVO.setPhone(request.getParameter("phone"));
-    cVO.setEmail(request.getParameter("email"));
+    // 암호화 진행
+    DataEncryption de = new DataEncryption("abcdef0123456789");
+
+    try {
+        cVO.setName(de.encrypt(request.getParameter("name")));
+        cVO.setPhone(de.encrypt(request.getParameter("phone")));
+        cVO.setEmail(de.encrypt(request.getParameter("email")));
+        System.out.println("ssu-!");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
     cVO.setCusFlag(request.getParameter("cusFlag"));
     cVO.setCusId(request.getParameter("cusId"));
     String gradeValue = request.getParameter("grade");
+
     if (gradeValue != null) {
         cVO.setGrade(Grade.gradeForDB(Integer.parseInt(gradeValue)));
     }
@@ -42,7 +51,7 @@
             location.href="http://localhost/jsp_prj/manager/customer/list_customer.jsp?currentPage=${param.currentPage}";
         }
         if(cnt==0){
-            msg = "변경할 수 없는 값은 절대 변경할 수 없습니다.";
+            msg = "변경할 수 없는 값은 절대로 변경할 수 없습니다.";
             history.back();
         }
 

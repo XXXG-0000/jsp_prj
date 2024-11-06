@@ -222,9 +222,9 @@
 			// param.currentPage: input type hidden 사용해 넘긴다.
 			if(${ not empty param.keyword }){ // 키워드가 있을 경우
 				url += "&keyword=${ param.keyword }"			
-			}// end if		
+			}// end if
 			location.href = url;
-     	});//click
+	     });//click
      	
     	$("#answer").click(function(){
  			movePage('u');
@@ -233,7 +233,69 @@
     	$("#cancel").click(function(){
 			movePage('d');
     	});//click
+    	
+    	$("#image").change(function(evt){
+			preview(evt);
+		})//change
+		
+		$("#btnUpload").click(function(){
+			ajaxFileUpload();
+		});//click
     });//ready
+    
+    function ajaxFileUpload(){
+    	if($("#image").val() == ""){
+    		alert("이미지를 선택해주세요");
+    		return;
+    	}
+    	
+    	//1. form 태그 얻기 // formControl의 값을 AJAX로 전달
+    	var form=$("#readFrm")[0];
+    	//alert(form);//object HtmlInputElement
+    	
+    	//2. HTML Form Control의 값을 data 속성으로 전달하기 위해 생성
+    	var formData = new FormData(form);
+    	
+    	$.ajax({
+    		url:"upload_img_process.jsp",
+    		contentType: false,
+    		processData: false,
+    		data: formData,
+    		type: "post",
+    		dataType: "json",
+    		error:function(xhr){
+    			console.log(xhr.status);
+    			alert("이미지 업로드 실패");
+    		},
+    		success:function(jsonObj){
+    			//alert(jsonObj.uploadflag)//false
+    			var msg="이미지 업로드 실패";
+    			if(!jsonObj.uploadflag){
+    				msg="이미지가 업로드 되었습니다."
+    			}
+    			alert(msg);
+    		}
+    	});
+    }//ajaxFileUpload
+    
+    function preview(evt){
+    	if($("#image").val() == ""){
+    		alert("이미지를 선택해주세요");
+    		return;
+    	}
+    	
+    	//1. 파일 컴포넌트 얻기
+    	var file = evt.target.files[0];
+    	//2. 스트림 생성
+    	var reader = new FileReader();
+    	//3. FileReader객체의 onload 이벤트 핸들러를 설정
+    	reader.onload = function(evt2){
+    		$("#preview").prop("src",evt2.target.result);
+    	}
+    	
+    	//4. 파일에서 읽어들여 실제 img 태그에 출력(미리보기)
+    	reader.readAsDataURL(file);
+    }//preview
 
     function movePage(flag){
 		var action="updateCoffeeDrink.jsp";
@@ -355,16 +417,6 @@
 	
     }//chkNull
     
-    // 이미지 미리보기 기능
-    function previewImage(event) {
-        const reader = new FileReader();
-        reader.onload = function(){
-            const imagePreview = document.getElementById('image-preview');
-            imagePreview.src = reader.result;
-            imagePreview.style.display = 'block';
-        }
-        reader.readAsDataURL(event.target.files[0]);
-    }
     </script>
 
 
@@ -461,8 +513,9 @@
             <label for="drink-image">이미지</label>
             <div class="image-upload">
                 <img id="preview" src="${ pVO.image }" alt="이미지 미리보기" style="">
-                <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
-            </div>
+                <input type="file" id="image" name="image" accept="image/*" "${ pVO.image }" style="border: none;">
+                <input type="button" value="이미지 업로드" id="btnUpload" class="btn btn-sm btn-success" style="margin-bottom: 20px;"/>
+		   </div>
 
 			<!-- 카테고리 구분 -->
 			<fieldset>
