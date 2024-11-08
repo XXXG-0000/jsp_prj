@@ -25,7 +25,12 @@
 <script type="text/javascript">
 /* JS 영역 => JS 코드 작성 */
 $(function(){
-	
+	$("input[name=checkAll]").click(function(){
+		  if(  $(this).is(":checked") === true)
+		    $(".chkbox").prop("checked", true);
+		  else
+		    $(".chkbox").prop("checked", false);
+		});
 }); // ready
 
 </script>
@@ -34,21 +39,11 @@ $(function(){
 <div id="wrap">
 <!-- HTML 영역 => HTML 태그 작성, CSS 정의한 디자인 적용, JS에서 동적인 디자인 생성 보여주는 일, JS에서 HTML Form Control에 입력된 값을 
 	유효성 검증 수행 => onxxx속성 사용 -->
-	<a href="http://localhost/jsp_prj/member/join_frm.jsp">회원가입</a>
-	
-	<c:choose>
-	<c:when test="${ empty sessionScope.userData }"><!-- empty는 null, empty 비교 -->
-	<a href="http://localhost/jsp_prj/login/login_frm.jsp">로그인</a>
-	</c:when>
-	<c:otherwise>
-	<a href="http://localhost/jsp_prj/login/login_out.jsp">로그아웃</a>
-	<a href="http://localhost/jsp_prj/mypage/mypage.jsp" title="마이페이지"><c:out value="${ userData.id }(${ userData.name })님 로그인 중"/></a><!-- mypage/mypage.jsp -->
-	<a href="http://localhost/jsp_prj/bookmark_rest/rest_map.jsp">식당리스트</a>
-	
-	</c:otherwise> 	
-	</c:choose>
-	
-	<a href="http://localhost/jsp_prj/board/board_list.jsp">게시판</a>
+	<input type="checkbox" name="checkAll"/>전체선택<br>
+
+<input type="checkbox" class="chkbox" value="사과"> 사과
+<input type="checkbox" class="chkbox" value="바나나"> 바나나
+<input type="checkbox" class="chkbox" value="수박"> 수박
 </div>
 </body>
 </html>

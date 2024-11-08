@@ -1,8 +1,33 @@
+<%@page import="java.sql.SQLException"%>
+<%@page import="kr.co.sist.user.rest.RestaurantDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
     info=""
     %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="../common/jsp/session_chk.jsp" %>
+<%@ include file="../common/jsp/post_chk.jsp" %>
+
+<%
+request.setCharacterEncoding("UTF-8");
+%>
+
+<jsp:useBean id="rVO" class="kr.co.sist.user.rest.RestaurantVO" scope="page"/>
+<jsp:setProperty name="rVO" property="*"/>
+<%
+rVO.setId(sessionId);
+
+boolean insertFlag = false;
+RestaurantDAO rDAO = RestaurantDAO.getInstance();
+try{
+	rDAO.insertRest(rVO);
+	insertFlag = true;
+} catch(SQLException se) {
+	se.printStackTrace();
+}//end catch
+
+pageContext.setAttribute("insertFlag", insertFlag);
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,6 +49,13 @@
 </style>
 <script type="text/javascript">
 /* JS 영역 => JS 코드 작성 */
+var msg = "식당이 즐겨찾기 되지 않았습니다.";
+
+<c:if test="${ insertFlag }">
+msg="${userData.id}님 ${param.restaurant} 정보가 추가되었습니다.";
+</c:if>
+alert(msg);
+location.href="rest_map.jsp";
 $(function(){
 	
 }); // ready
@@ -34,21 +66,6 @@ $(function(){
 <div id="wrap">
 <!-- HTML 영역 => HTML 태그 작성, CSS 정의한 디자인 적용, JS에서 동적인 디자인 생성 보여주는 일, JS에서 HTML Form Control에 입력된 값을 
 	유효성 검증 수행 => onxxx속성 사용 -->
-	<a href="http://localhost/jsp_prj/member/join_frm.jsp">회원가입</a>
-	
-	<c:choose>
-	<c:when test="${ empty sessionScope.userData }"><!-- empty는 null, empty 비교 -->
-	<a href="http://localhost/jsp_prj/login/login_frm.jsp">로그인</a>
-	</c:when>
-	<c:otherwise>
-	<a href="http://localhost/jsp_prj/login/login_out.jsp">로그아웃</a>
-	<a href="http://localhost/jsp_prj/mypage/mypage.jsp" title="마이페이지"><c:out value="${ userData.id }(${ userData.name })님 로그인 중"/></a><!-- mypage/mypage.jsp -->
-	<a href="http://localhost/jsp_prj/bookmark_rest/rest_map.jsp">식당리스트</a>
-	
-	</c:otherwise> 	
-	</c:choose>
-	
-	<a href="http://localhost/jsp_prj/board/board_list.jsp">게시판</a>
 </div>
 </body>
 </html>
